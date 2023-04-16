@@ -1,6 +1,7 @@
 import pathlib
 import customtkinter
 from PIL import Image
+
 from src.pages.Page import Page
 
 
@@ -14,12 +15,16 @@ class LoginPage(customtkinter.CTkFrame, Page):
     def get_page_size():
         return "600x580"
 
+    @staticmethod
+    def get_page_min_size():
+        return "390x561"
+
     def __init__(self, master: customtkinter.CTkFrame, controller, **kwargs):
         super().__init__(master, **kwargs)
 
         self.logo = customtkinter.CTkImage(
-            light_image=Image.open(pathlib.Path("src", "assets", "icon_1.png")),
-            dark_image=Image.open(pathlib.Path("src", "assets", "icon_2.png")),
+            light_image=Image.open(pathlib.Path("assets", "icon_1.png")),
+            dark_image=Image.open(pathlib.Path("assets", "icon_2.png")),
             size=(200, 200)
         )
         self.lbl_logo = customtkinter.CTkLabel(master=self, image=self.logo, text="", corner_radius=25)
@@ -48,6 +53,7 @@ class LoginPage(customtkinter.CTkFrame, Page):
             command=controller.login_user
         )
         self.frm_buttons.login_button.grid(row=0, column=0, pady=5, padx=10)
+
         # self.frm_buttons.register_button = customtkinter.CTkButton(
         #     master=self.frm_buttons,
         #     width=200,

@@ -14,6 +14,7 @@ class APIaccess(object):
     def __init__(self, api_key):
         self._API_KEY = api_key
         self.configs = self.get_configs()
+        print(self.configs)
 
     def get_configs(self):
         try:

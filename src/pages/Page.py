@@ -11,3 +11,8 @@ class Page(ABC):
     @abstractmethod
     def get_page_size():
         pass
+
+    @staticmethod
+    @abstractmethod
+    def get_page_min_size():
+        pass

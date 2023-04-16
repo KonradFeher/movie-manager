@@ -1,5 +1,8 @@
+from io import BytesIO
 from tkinter import *
+from PIL import Image
 import customtkinter
+import requests
 from models.User import User
 from src.API import APIaccess
 from src.pages.MainPage import MainPage
@@ -45,17 +48,26 @@ class App(customtkinter.CTk):
 
         self.bind("<Return>", lambda e: self.handle_return())
         self.show_page("LoginPage")
+        self.current_page = "LoginPage"
         # self.center_window()
 
     def show_page(self, cont):
-        self.current_page = cont;
+        self.focus_set()
+        self.current_page = cont
         page = eval(cont)
         frame = self.frames[page]
+        # frame.tkraise()
+
+        frame.tkraise()
         frame.tkraise()
         self.title(page.get_page_title())
+        # print(page.get_page_min_size())
+        self.minsize(width=int(page.get_page_min_size().split('x')[0]), height=int(page.get_page_min_size().split('x')[1]))
         # print(page.get_page_size())
         self.geometry(page.get_page_size())
         self.center_window()
+        if page == MainPage:
+            self.search_movies("The Big Lebowski")
 
     # https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
     def center_window(self, width=1, height=1):
@@ -79,7 +91,6 @@ class App(customtkinter.CTk):
         print("User login attempt:", l_p.ent_username.get())
 
         if l_p.ent_username.get() == 'letmein':
-            print("legit.")
             self.show_page("MainPage")
 
         # TODO
@@ -94,13 +105,35 @@ class App(customtkinter.CTk):
         # TODO
 
     def handle_return(self):
+        print(self._current_width, self._current_height)
+        print(self.current_page)
         if self.current_page == "RegisterPage":
             self.register_user()
         elif self.current_page == "LoginPage":
-            self.register_user()
+            self.login_user()
         elif self.current_page == "MainPage":
-            print("🤡")
+            self.search_movies(self.frames[MainPage].ent_movie_title.get())
             # todo?
+
+    def get_movie_poster(self, path, typ='poster', size=1):
+        if path is not None and path != 0 and path != "":
+            img_conf = self.api.configs.get('images')
+            # print(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
+            response = requests.get(img_conf.get('base_url') + img_conf.get(typ+'_sizes')[size]+path)
+            return Image.open(BytesIO(response.content))
+
+    def search_movies(self, title):
+        print("Searching for", title)
+        m_p = self.frames[MainPage]
+        m_p.clear_results()
+        request_response = self.api.fetch_movies(title)
+        print(request_response)
+        for result in request_response.get('results'):
+            try:
+                m_p.add_result(result)
+            except Exception as e:
+                print("HUH?", e)
+        m_p.refresh_results()
 
 
 if __name__ in {"__main__", "__mp_main__"}:

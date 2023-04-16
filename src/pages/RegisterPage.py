@@ -15,12 +15,16 @@ class RegisterPage(customtkinter.CTkFrame, Page):
     def get_page_size():
         return "600x740"
 
+    @staticmethod
+    def get_page_min_size():
+        return "462x710"
+
     def __init__(self, master: customtkinter.CTkFrame, controller, **kwargs):
         super().__init__(master, **kwargs)
 
         self.logo = customtkinter.CTkImage(
-            light_image=Image.open(pathlib.Path("src", "assets", "icon_1.png")),
-            dark_image=Image.open(pathlib.Path("src", "assets", "icon_2.png")),
+            light_image=Image.open(pathlib.Path("assets", "icon_1.png")),
+            dark_image=Image.open(pathlib.Path("assets", "icon_2.png")),
             size=(200, 200)
         )
 
@@ -53,14 +57,7 @@ class RegisterPage(customtkinter.CTkFrame, Page):
             height=40,
             corner_radius=20,
             text="Register",
-            command=lambda: controller.register_user(
-                User(
-                    self.ent_username.get(),
-                    self.ent_email.get(),
-                    self.ent_password.get(),
-                    self.ent_password_again.get()
-                )
-            )
+            command= controller.register_user
         )
         self.register_button.pack(anchor="center", pady=(25, 50), padx=20)
 
