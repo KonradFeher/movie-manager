@@ -12,6 +12,9 @@ import difflib
 
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
+from src.pages.SearchFrame import SearchFrame
+
+
 class App(customtkinter.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -41,10 +44,10 @@ class App(customtkinter.CTk):
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
-        self.frames = dict()
+        self.pages = dict()
         for F in (LoginPage, RegisterPage, MainPage):
             frame = F(self.container, self)
-            self.frames[F] = frame
+            self.pages[F] = frame
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.bind("<Return>", lambda e: self.handle_return())
@@ -56,10 +59,7 @@ class App(customtkinter.CTk):
         self.focus_set()
         self.current_page = cont
         page = eval(cont)
-        frame = self.frames[page]
-        # frame.tkraise()
-
-        frame.tkraise()
+        frame = self.pages[page]
         frame.tkraise()
         self.title(page.get_page_title())
         # print(page.get_page_min_size())
@@ -92,7 +92,7 @@ class App(customtkinter.CTk):
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
     def login_user(self):
-        l_p = self.frames[LoginPage]
+        l_p = self.pages[LoginPage]
         print("User login attempt:", l_p.ent_username.get())
 
         if l_p.ent_username.get() == 'letmein':
@@ -101,7 +101,7 @@ class App(customtkinter.CTk):
         # TODO
 
     def register_user(self):
-        r_p = self.frames[RegisterPage]
+        r_p = self.pages[RegisterPage]
         print("User registering:")
         print(r_p.ent_username.get())
         print(r_p.ent_email.get())
@@ -117,7 +117,7 @@ class App(customtkinter.CTk):
         elif self.current_page == "LoginPage":
             self.login_user()
         elif self.current_page == "MainPage":
-            self.search_movies(self.frames[MainPage].ent_movie_title.get())
+            self.search_movies(self.pages[MainPage].frames[SearchFrame].ent_movie_title.get())
 
     def get_movie_poster(self, path, typ='poster', size=1):
         if path is not None and path != 0 and path != "":
@@ -128,10 +128,10 @@ class App(customtkinter.CTk):
 
     def search_movies(self, title):
         print("Searching for", title)
-        m_p = self.frames[MainPage]
+        search_frame = self.pages[MainPage].frames[SearchFrame]
         # m_p.progress_bar.grid(row=4, column=1, pady=(0, 30))
         # m_p.progress_bar.start()
-        m_p.clear_results()
+        search_frame.clear_results()
         request_response = self.api.fetch_movies(title)
         print(request_response)
         results = sorted(
@@ -144,10 +144,10 @@ class App(customtkinter.CTk):
             #   difflib.SequenceMatcher(a=result['title'].lower(), b=title.lower()).ratio()**2)
             # self.update_idletasks()
             try:
-                m_p.add_result(result)
+                search_frame.add_result(result)
             except Exception as e:
                 print("HUH?", e)
-        m_p.refresh_results()
+        search_frame.refresh_results()
         # m_p.progress_bar.stop()
         # m_p.progress_bar.grid_forget()
 
