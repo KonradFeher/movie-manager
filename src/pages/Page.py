@@ -13,6 +13,10 @@ class Page(ABC):
         pass
 
     @staticmethod
-    @abstractmethod
     def get_page_min_size():
-        pass
+        return "10x10"
+
+    # returns False if there is no limit
+    @staticmethod
+    def get_page_max_size():
+        return None

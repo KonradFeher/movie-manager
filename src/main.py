@@ -27,12 +27,12 @@ class App(customtkinter.CTk):
 
         ###############################################################
 
-        customtkinter.set_appearance_mode("System")
+        customtkinter.set_appearance_mode("system")
         customtkinter.set_default_color_theme("dark-blue")  # #2fa572
         self.minsize(width=520, height=600)
         self.title("MovieManager")
-        self.geometry("600x580")
-        self.center_window(600, 580)
+        self.geometry("600x580+300+300")
+        # self.center_window(600, 580)
         # self.resizable(False, False)
 
         self.container = customtkinter.CTkFrame(self, height=480, width=720)
@@ -62,10 +62,14 @@ class App(customtkinter.CTk):
         frame.tkraise()
         self.title(page.get_page_title())
         # print(page.get_page_min_size())
-        self.minsize(width=int(page.get_page_min_size().split('x')[0]), height=int(page.get_page_min_size().split('x')[1]))
+        minsize = page.get_page_min_size().split('x')
+        self.minsize(width=int(minsize[0]), height=int(minsize[1]))
+        if page.get_page_max_size() is not None:
+            maxsize = page.get_page_max_size().split('x')
+            self.maxsize(width=int(maxsize[0]), height=int(maxsize[1]))
         # print(page.get_page_size())
         self.geometry(page.get_page_size())
-        self.center_window()
+        # self.center_window()
         if page == MainPage:
             self.search_movies("The Big Lebowski")
 
@@ -113,7 +117,6 @@ class App(customtkinter.CTk):
             self.login_user()
         elif self.current_page == "MainPage":
             self.search_movies(self.frames[MainPage].ent_movie_title.get())
-            # todo?
 
     def get_movie_poster(self, path, typ='poster', size=1):
         if path is not None and path != 0 and path != "":
@@ -122,18 +125,23 @@ class App(customtkinter.CTk):
             response = requests.get(img_conf.get('base_url') + img_conf.get(typ+'_sizes')[size]+path)
             return Image.open(BytesIO(response.content))
 
-    def search_movies(self, title):
+    async def search_movies(self, title):
         print("Searching for", title)
         m_p = self.frames[MainPage]
+        # m_p.progress_bar.grid(row=4, column=1, pady=(0, 30))
+        # m_p.progress_bar.start()
         m_p.clear_results()
         request_response = self.api.fetch_movies(title)
         print(request_response)
         for result in request_response.get('results'):
+            # self.update_idletasks()
             try:
                 m_p.add_result(result)
             except Exception as e:
                 print("HUH?", e)
         m_p.refresh_results()
+        # m_p.progress_bar.stop()
+        # m_p.progress_bar.grid_forget()
 
 
 if __name__ in {"__main__", "__mp_main__"}:
