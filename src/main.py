@@ -32,7 +32,7 @@ class App(customtkinter.CTk):
         customtkinter.set_default_color_theme("dark-blue")  # #2fa572
         self.minsize(width=520, height=600)
         self.title("MovieManager")
-        self.geometry("600x580+300+300")
+        self.geometry("600x580+300+100")
         # self.center_window(600, 580)
         # self.resizable(False, False)
 
@@ -161,3 +161,4 @@ if __name__ in {"__main__", "__mp_main__"}:
     app.attributes('-topmost', 0)
 
     app.mainloop()
+

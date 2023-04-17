@@ -3,7 +3,7 @@ import pathlib
 
 import customtkinter
 from PIL import Image
-
+import tkinter
 from src.models.User import User
 from src.pages.Page import Page
 import asyncio
@@ -32,10 +32,42 @@ class MainPage(customtkinter.CTkFrame, Page):
         # self.default_poster = Image.open(pathlib.Path("assets", "default_poster.jpg"))
         self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
         self.parent = controller
-        self.configure(border_width=3)
         self.result_columns = 3
-        self.grid_columnconfigure(1, weight=1)
+        self.grid_columnconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=5)
         self.grid_rowconfigure('all', weight=1)
+
+        self.frm_nav = customtkinter.CTkFrame(master=self, corner_radius=0, width=150)
+        self.frm_nav.grid(row=0, rowspan=8, column=0, sticky='NSEW')
+
+        self.logo = customtkinter.CTkImage(
+            light_image=Image.open(pathlib.Path("assets", "icon_1.png")),
+            dark_image=Image.open(pathlib.Path("assets", "icon_2.png")),
+            size=(125, 125)
+        )
+
+        self.lbl_nav_logo = customtkinter.CTkLabel(master=self.frm_nav, text='', image=self.logo, width=125, height=125)
+        self.lbl_nav_logo.pack()
+
+        self.font = customtkinter.CTkFont(family="Prompt", size=18)
+
+        self.frm_nav_search = customtkinter.CTkFrame(master=self.frm_nav, height=100, width=200,
+                                                     corner_radius=5, fg_color=self.frm_nav.cget("fg_color"))
+        self.frm_nav_search.pack(pady=5, padx=5)
+        self.lbl_nav_search = customtkinter.CTkLabel(master=self.frm_nav_search, text='SEARCH', font=self.font)
+        self.lbl_nav_search.pack(side=tkinter.LEFT)
+
+        self.frm_nav_watchlist = customtkinter.CTkFrame(master=self.frm_nav, height=100, width=200,
+                                                        corner_radius=5, fg_color=self.frm_nav.cget("fg_color"))
+        self.frm_nav_watchlist.pack(pady=5, padx=5)
+        self.lbl_nav_watchlist = customtkinter.CTkLabel(master=self.frm_nav_watchlist, text='WATCHLIST', font=self.font)
+        self.lbl_nav_watchlist.pack(side=tkinter.LEFT)
+
+        self.frm_nav_watched = customtkinter.CTkFrame(master=self.frm_nav, height=100, width=200,
+                                                      corner_radius=5, fg_color=self.frm_nav.cget("fg_color"))
+        self.frm_nav_watched.pack(pady=5, padx=5)
+        self.lbl_nav_watched = customtkinter.CTkLabel(master=self.frm_nav_watched, text='WATCHED', font=self.font)
+        self.lbl_nav_watched.pack(side=tkinter.LEFT)
 
         self.lbl_movie_title = customtkinter.CTkLabel(master=self, text="Search for a movie title!", width=500)
         self.lbl_movie_title.grid(row=1, column=1, pady=(20, 5))
@@ -61,7 +93,7 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.frm_results.grid_rowconfigure("all", weight=1)
         for i in range(self.result_columns):
             self.frm_results.grid_columnconfigure(i, weight=1)
-        self.frm_results.grid(row=5, column=1, sticky="SNWE", padx=10, pady=(0, 10))
+        self.frm_results.grid(row=5, column=1, sticky="NSEW", padx=10, pady=(0, 10))
         self.results = list()
 
     def add_result(self, movie):
@@ -96,6 +128,11 @@ class MainPage(customtkinter.CTkFrame, Page):
 
             asyncio.run(self.set_handlers(movie, lbl_movie_poster, lbl_movie_title, frm_movie_card))
             count += 1
+
+        if count == 0:
+            print("no results found")
+            lbl_no_results = customtkinter.CTkLabel(master=self.frm_results, text='No results.')
+            lbl_no_results.grid(row=0, column=1, pady=10)
 
     @staticmethod
     async def set_handlers(movie, lbl_movie_poster, lbl_movie_title, frm_movie_card):
