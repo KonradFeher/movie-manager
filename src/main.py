@@ -125,7 +125,7 @@ class App(customtkinter.CTk):
             response = requests.get(img_conf.get('base_url') + img_conf.get(typ+'_sizes')[size]+path)
             return Image.open(BytesIO(response.content))
 
-    async def search_movies(self, title):
+    def search_movies(self, title):
         print("Searching for", title)
         m_p = self.frames[MainPage]
         # m_p.progress_bar.grid(row=4, column=1, pady=(0, 30))
