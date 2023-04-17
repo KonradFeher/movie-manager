@@ -8,6 +8,7 @@ from src.API import APIaccess
 from src.pages.MainPage import MainPage
 from src.pages.LoginPage import LoginPage
 from src.pages.RegisterPage import RegisterPage
+import difflib
 
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
@@ -133,7 +134,14 @@ class App(customtkinter.CTk):
         m_p.clear_results()
         request_response = self.api.fetch_movies(title)
         print(request_response)
-        for result in request_response.get('results'):
+        results = sorted(
+            request_response.get('results'),
+            key=lambda x: difflib.SequenceMatcher(a=x['title'].lower(), b=title.lower()).ratio()**2 * x['popularity'],
+            reverse=True
+        )
+        for result in results:
+            # print(result['title'], "-", result['popularity'] *
+            #   difflib.SequenceMatcher(a=result['title'].lower(), b=title.lower()).ratio()**2)
             # self.update_idletasks()
             try:
                 m_p.add_result(result)
