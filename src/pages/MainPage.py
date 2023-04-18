@@ -9,6 +9,8 @@ from src.pages.Page import Page
 import asyncio
 
 from src.pages.SearchFrame import SearchFrame
+from src.pages.WatchedFrame import WatchedFrame
+from src.pages.WatchlistFrame import WatchlistFrame
 
 
 class MainPage(customtkinter.CTkFrame, Page):
@@ -45,6 +47,12 @@ class MainPage(customtkinter.CTkFrame, Page):
             size=(125, 125)
         )
 
+        def enter(label):
+            label.configure(fg_color="#666")
+
+        def leave(label):
+            label.configure(fg_color="transparent")
+
         self.lbl_nav_logo = customtkinter.CTkLabel(master=self.frm_nav, text='', image=self.logo, width=125, height=125)
         self.lbl_nav_logo.pack()
 
@@ -55,18 +63,33 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.frm_nav_search.pack(pady=5, padx=5)
         self.lbl_nav_search = customtkinter.CTkLabel(master=self.frm_nav_search, text='SEARCH', font=self.font)
         self.lbl_nav_search.pack(side=tkinter.LEFT)
+        self.lbl_nav_search.bind("<Enter>", lambda e: enter(self.lbl_nav_search))
+        self.lbl_nav_search.bind("<Leave>", lambda e: leave(self.lbl_nav_search))
+
+        self.lbl_nav_search.bind("<Button-1>", lambda e: self.show_frame("SearchFrame"))
+        self.frm_nav_search.bind("<Button-1>", lambda e: self.show_frame("SearchFrame"))
 
         self.frm_nav_watchlist = customtkinter.CTkFrame(master=self.frm_nav, height=100, width=200,
                                                         corner_radius=5, fg_color=self.frm_nav.cget("fg_color"))
         self.frm_nav_watchlist.pack(pady=5, padx=5)
         self.lbl_nav_watchlist = customtkinter.CTkLabel(master=self.frm_nav_watchlist, text='WATCHLIST', font=self.font)
         self.lbl_nav_watchlist.pack(side=tkinter.LEFT)
+        self.lbl_nav_watchlist.bind("<Enter>", lambda e: enter(self.lbl_nav_watchlist))
+        self.lbl_nav_watchlist.bind("<Leave>", lambda e: leave(self.lbl_nav_watchlist))
+
+        self.lbl_nav_watchlist.bind("<Button-1>", lambda e: self.show_frame("WatchlistFrame"))
+        self.frm_nav_watchlist.bind("<Button-1>", lambda e: self.show_frame("WatchlistFrame"))
 
         self.frm_nav_watched = customtkinter.CTkFrame(master=self.frm_nav, height=100, width=200,
                                                       corner_radius=5, fg_color=self.frm_nav.cget("fg_color"))
         self.frm_nav_watched.pack(pady=5, padx=5)
         self.lbl_nav_watched = customtkinter.CTkLabel(master=self.frm_nav_watched, text='WATCHED', font=self.font)
         self.lbl_nav_watched.pack(side=tkinter.LEFT)
+        self.lbl_nav_watched.bind("<Enter>", lambda e: enter(self.lbl_nav_watched))
+        self.lbl_nav_watched.bind("<Leave>", lambda e: leave(self.lbl_nav_watched))
+
+        self.lbl_nav_watched.bind("<Button-1>", lambda e: self.show_frame("WatchedFrame"))
+        self.frm_nav_watched.bind("<Button-1>", lambda e: self.show_frame("WatchedFrame"))
 
         self.frames = dict()
 
@@ -76,7 +99,7 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.frame_container.grid_rowconfigure(0, weight=1)
         self.frame_container.grid_columnconfigure(0, weight=1)
 
-        for Frame in [SearchFrame]:
+        for Frame in [SearchFrame, WatchedFrame, WatchlistFrame]:
             frame = Frame(self.frame_container, self.controller)
             self.frames[Frame] = frame
             frame.grid(row=0, column=0, sticky="NSEW")
