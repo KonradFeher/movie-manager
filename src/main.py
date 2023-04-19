@@ -8,11 +8,14 @@ from src.API import APIaccess
 from src.Database import Database
 from src.pages.MainPage import MainPage
 from src.pages.LoginPage import LoginPage
+from src.pages.MovieFrame import MovieFrame
 from src.pages.RegisterPage import RegisterPage
 import difflib
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
 from src.pages.SearchFrame import SearchFrame
+from src.pages.WatchedFrame import WatchedFrame
+from src.pages.WatchlistFrame import WatchlistFrame
 
 
 class App(customtkinter.CTk):
@@ -52,9 +55,11 @@ class App(customtkinter.CTk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         self.bind("<Return>", lambda e: self.handle_return())
+
         self.show_page("LoginPage")
         self.current_page = "LoginPage"
-        # self.center_window()
+        # self.show_page("MainPage")
+        # self.pages[MainPage].show_frame("MovieFrame")
 
     def show_page(self, cont):
         self.focus_set()
@@ -167,19 +172,24 @@ class App(customtkinter.CTk):
         elif self.current_page == "MainPage":
             self.search_movies(self.pages[MainPage].frames[SearchFrame].ent_movie_title.get())
 
-    def get_movie_poster(self, path, typ='poster', size=1):
+    def get_movie_image(self, path, typ='poster', size=1):
         if path is not None and path != 0 and path != "":
             img_conf = self.api.configs.get('images')
             # print(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
+            # print(img_conf.get(typ + '_sizes'))
+            # print(img_conf.get(typ + '_sizes')[size])
             response = requests.get(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
             return Image.open(BytesIO(response.content))
+        else:
+            return None
 
     def search_movies(self, title):
         print("Searching for", title)
         search_frame = self.pages[MainPage].frames[SearchFrame]
         # m_p.progress_bar.grid(row=4, column=1, pady=(0, 30))
         # m_p.progress_bar.start()
-        search_frame.clear_results()
+        # search_frame.clear_results()
+        search_frame.reset_results_frame()
         request_response = self.api.fetch_movies(title)
         # print(request_response)
         results = sorted(
@@ -193,11 +203,48 @@ class App(customtkinter.CTk):
             # self.update_idletasks()
             try:
                 search_frame.add_result(result)
+                print(result)
             except Exception as e:
                 print("HUH?", e)
         search_frame.refresh_results()
         # m_p.progress_bar.stop()
         # m_p.progress_bar.grid_forget()
+
+    def show_movie(self, movie):
+        # self.pages[MainPage].frames[MovieFrame].load_movie(movie)
+        movie_details = self.api.get_movie_details(movie.get('id'))
+        self.pages[MainPage].frames[MovieFrame].load_movie(movie_details)
+        self.pages[MainPage].show_frame('MovieFrame')
+
+    def add_to_watchlist(self, movie):
+        with Database("movie-manager.db") as db:
+            db.add_to_watchlist(self.active_user.email, movie.get('id'))
+
+    def add_to_watched(self, movie):
+        with Database("movie-manager.db") as db:
+            db.add_to_watched(self.active_user.email, movie.get('id'))
+
+    def go_to_watched(self):
+        self.pages[MainPage].frames[WatchedFrame].reset_results_frame()
+        with Database("movie-manager.db") as db:
+            watched_ids = db.fetch_watched_by_email(self.active_user.email)
+            print(watched_ids)
+        for wid in watched_ids:
+            movie = self.api.get_movie_details(wid)
+            self.pages[MainPage].frames[WatchedFrame].add_result(movie)
+        self.pages[MainPage].frames[WatchedFrame].refresh_results()
+        self.pages[MainPage].show_frame("WatchedFrame")
+
+    def go_to_watchlist(self):
+        self.pages[MainPage].frames[WatchlistFrame].reset_results_frame()
+        with Database("movie-manager.db") as db:
+            watchlist_ids = db.fetch_watchlist_by_email(self.active_user.email)
+            print(watchlist_ids)
+        for wid in watchlist_ids:
+            movie = self.api.get_movie_details(wid)
+            self.pages[MainPage].frames[WatchlistFrame].add_result(movie)
+        self.pages[MainPage].frames[WatchlistFrame].refresh_results()
+        self.pages[MainPage].show_frame("WatchlistFrame")
 
 
 if __name__ in {"__main__", "__mp_main__"}:

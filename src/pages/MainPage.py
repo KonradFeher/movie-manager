@@ -2,6 +2,8 @@ import pathlib
 import customtkinter
 from PIL import Image
 import tkinter
+
+from src.pages.MovieFrame import MovieFrame
 from src.pages.Page import Page
 from src.pages.SearchFrame import SearchFrame
 from src.pages.WatchedFrame import WatchedFrame
@@ -21,6 +23,10 @@ class MainPage(customtkinter.CTkFrame, Page):
     @staticmethod
     def get_page_min_size():
         return "920x740"
+
+    @staticmethod
+    def get_page_max_size():
+        return "920x1080"
 
     def __init__(self, master: customtkinter.CTkFrame, controller, **kwargs):
         super().__init__(master, **kwargs)
@@ -68,8 +74,8 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.lbl_nav_watchlist.bind("<Enter>", lambda e: enter(self.lbl_nav_watchlist))
         self.lbl_nav_watchlist.bind("<Leave>", lambda e: leave(self.lbl_nav_watchlist))
 
-        self.lbl_nav_watchlist.bind("<Button-1>", lambda e: self.show_frame("WatchlistFrame"))
-        self.frm_nav_watchlist.bind("<Button-1>", lambda e: self.show_frame("WatchlistFrame"))
+        self.lbl_nav_watchlist.bind("<Button-1>", lambda e: controller.go_to_watchlist())
+        self.frm_nav_watchlist.bind("<Button-1>", lambda e: controller.go_to_watchlist())
 
         self.frm_nav_watched = customtkinter.CTkFrame(master=self.frm_nav, height=100, width=200,
                                                       corner_radius=5, fg_color=self.frm_nav.cget("fg_color"))
@@ -79,8 +85,8 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.lbl_nav_watched.bind("<Enter>", lambda e: enter(self.lbl_nav_watched))
         self.lbl_nav_watched.bind("<Leave>", lambda e: leave(self.lbl_nav_watched))
 
-        self.lbl_nav_watched.bind("<Button-1>", lambda e: self.show_frame("WatchedFrame"))
-        self.frm_nav_watched.bind("<Button-1>", lambda e: self.show_frame("WatchedFrame"))
+        self.lbl_nav_watched.bind("<Button-1>", lambda e: controller.go_to_watched())
+        self.frm_nav_watched.bind("<Button-1>", lambda e: controller.go_to_watched())
 
         self.frames = dict()
 
@@ -90,7 +96,7 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.frame_container.grid_rowconfigure(0, weight=1)
         self.frame_container.grid_columnconfigure(0, weight=1)
 
-        for Frame in [SearchFrame, WatchedFrame, WatchlistFrame]:
+        for Frame in [SearchFrame, WatchedFrame, WatchlistFrame, MovieFrame]:
             frame = Frame(self.frame_container, self.controller)
             self.frames[Frame] = frame
             frame.grid(row=0, column=0, sticky="NSEW")

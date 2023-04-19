@@ -1,4 +1,6 @@
 import functools
+import json
+
 import requests
 from urllib3.exceptions import HTTPError
 from urllib.parse import quote_plus
@@ -51,6 +53,23 @@ class APIaccess(object):
                 return result.json()
             else:
                 raise Exception("Error while fetching movies, response status code:", result.status_code)
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def get_movie_details(self, movie_id):
+        try:
+            params = {
+                'api_key': self._API_KEY
+            }
+            result = requests.get("https://api.themoviedb.org/3/movie/" + str(movie_id) + "?", params)
+            if result.status_code == 200:
+                # with open("details_ex.json", "w") as w:
+                #     w.write(json.dumps(result.json()))
+                return result.json()
+            else:
+                raise Exception("Error while fetching movie details, response status code:", result.status_code)
         except HTTPError as http_err:
             print(f'HTTP error occurred: {http_err}')
         except Exception as err:

@@ -38,6 +38,17 @@ class SearchFrame(customtkinter.CTkFrame):
         self.frm_results.pack(fill='both', expand=True, padx=10, pady=10)
         self.results = list()
 
+    def reset_results_frame(self):
+        self.clear_results()
+        self.frm_results.pack_forget()
+        self.frm_results.destroy()
+        self.frm_results = customtkinter.CTkScrollableFrame(master=self, height=555)
+        self.frm_results.grid_rowconfigure("all", weight=1)
+        for i in range(self.result_columns):
+            self.frm_results.grid_columnconfigure(i, weight=1)
+        self.frm_results.pack(fill='both', expand=True, padx=10, pady=10)
+        self.results = list()
+
     def add_result(self, movie):
         self.results.append(movie)
 
@@ -76,13 +87,12 @@ class SearchFrame(customtkinter.CTkFrame):
             lbl_no_results = customtkinter.CTkLabel(master=self.frm_results, text='No results.')
             lbl_no_results.grid(row=0, column=1, pady=10)
 
-
-    @staticmethod
-    async def set_handlers(movie, lbl_movie_poster, lbl_movie_title, frm_movie_card):
+    async def set_handlers(self, movie, lbl_movie_poster, lbl_movie_title, frm_movie_card):
         # 'bind_all' is not allowed, could result in undefined behavior ????????????
 
         def button1(e, mov=movie):
-            print(mov.get('title'))
+            # print(mov.get('title'))
+            self.controller.show_movie(movie)
 
         lbl_movie_poster.bind("<Button-1>", button1)
         lbl_movie_title.bind("<Button-1>", button1)
@@ -105,7 +115,7 @@ class SearchFrame(customtkinter.CTkFrame):
         frm_movie_card.bind("<Leave>", leave)
 
     async def load_image(self, movie, label):
-        poster = self.controller.get_movie_poster(movie.get('poster_path'), size=2)
+        poster = self.controller.get_movie_image(movie.get('poster_path'), size=2)
         img_poster = customtkinter.CTkImage(
             light_image=poster if poster is not None else self.default_poster,
             size=(200, 300)
