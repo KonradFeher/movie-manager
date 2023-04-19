@@ -1,4 +1,6 @@
 import pathlib
+from tkinter import BOTTOM
+
 import customtkinter
 from PIL import Image
 from src.pages.Page import Page
@@ -29,10 +31,10 @@ class LoginPage(customtkinter.CTkFrame, Page):
         self.lbl_logo = customtkinter.CTkLabel(master=self, image=self.logo, text="", corner_radius=25)
         self.lbl_logo.pack(anchor="center", pady=(50, 10), padx=30)
 
-        self.lbl_username = customtkinter.CTkLabel(master=self, text="Username")
-        self.lbl_username.pack(anchor="center", pady=(25, 0), padx=30)
-        self.ent_username = customtkinter.CTkEntry(master=self, width=400, corner_radius=5, placeholder_text="Username")
-        self.ent_username.pack(anchor="center", pady=10, padx=30)
+        self.lbl_username_or_email = customtkinter.CTkLabel(master=self, text="Username or email")
+        self.lbl_username_or_email.pack(anchor="center", pady=(25, 0), padx=30)
+        self.ent_username_or_email = customtkinter.CTkEntry(master=self, width=400, corner_radius=5, placeholder_text="Username or email")
+        self.ent_username_or_email.pack(anchor="center", pady=10, padx=30)
 
         self.lbl_password = customtkinter.CTkLabel(master=self, text="Password")
         self.lbl_password.pack(anchor="center", pady=0, padx=30)
@@ -49,9 +51,12 @@ class LoginPage(customtkinter.CTkFrame, Page):
             height=40,
             corner_radius=20,
             text="Log In",
-            command=controller.login_user
+            command=lambda: controller.login_user()
         )
         self.frm_buttons.login_button.grid(row=0, column=0, pady=5, padx=10)
+
+        self.lbl_incorrect = customtkinter.CTkLabel(master=self, text="", corner_radius=25, text_color="red")
+        self.lbl_incorrect.pack(anchor="center")
 
         # self.frm_buttons.register_button = customtkinter.CTkButton(
         #     master=self.frm_buttons,
@@ -62,7 +67,7 @@ class LoginPage(customtkinter.CTkFrame, Page):
         #     command=lambda: controller.show_page(RegisterPage)
         # )
         # self.frm_buttons.register_button.grid(row=0, column=1, pady=5, padx=10)
-        self.frm_buttons.pack(anchor="center", pady=(25, 50), padx=20)
+        self.frm_buttons.pack(side=BOTTOM, anchor="center", pady=(25, 25), padx=20)
 
         self.btn_register = customtkinter.CTkButton(
             master=self,
@@ -74,3 +79,6 @@ class LoginPage(customtkinter.CTkFrame, Page):
             text_color="#5584CC"
         )
         self.btn_register.place(anchor="nw", x=20, y=20)
+
+    def display_incorrect(self, show=True):
+        self.lbl_incorrect.configure(text="Invalid credentials." if show else "")

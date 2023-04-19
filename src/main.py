@@ -1,14 +1,15 @@
+import re
 from io import BytesIO
 from tkinter import *
 from PIL import Image
 import customtkinter
 import requests
 from src.API import APIaccess
+from src.Database import Database
 from src.pages.MainPage import MainPage
 from src.pages.LoginPage import LoginPage
 from src.pages.RegisterPage import RegisterPage
 import difflib
-
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
 from src.pages.SearchFrame import SearchFrame
@@ -18,6 +19,7 @@ class App(customtkinter.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         self.current_page = None
+        self.active_user = None
         self.api = APIaccess('352322dd49f426559fac64881f6ecbb9')
 
         ###############################################################
@@ -91,26 +93,73 @@ class App(customtkinter.CTk):
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
     def login_user(self):
-        l_p = self.pages[LoginPage]
-        print("User login attempt:", l_p.ent_username.get())
+        login_page = self.pages[LoginPage]
 
-        if l_p.ent_username.get() == 'letmein':
+        username_or_email = login_page.ent_username_or_email.get()
+        password = login_page.ent_password.get()
+
+        print("User login attempt:", username_or_email)
+        # backdoor
+        if username_or_email == 'letmein':
             self.show_page("MainPage")
 
-        # TODO
+        # if either of the fields is empty, stop login attempt
+        if len(username_or_email) == 0 or len(password) == 0:
+            login_page.display_incorrect()
+            return False
+
+        with Database("movie-manager.db") as db:
+            user = db.verify_credentials(username_or_email, password)
+            if user:
+                login_page.display_incorrect(show=False)
+                self.active_user = user
+                print("Successful login")
+                self.show_page('MainPage')
+                return
+            else:
+                print("Unsuccessful login")
+                login_page.display_incorrect()
+                return
 
     def register_user(self):
-        r_p = self.pages[RegisterPage]
+        register_page = self.pages[RegisterPage]
+
+        email = register_page.ent_email.get()
+        username = register_page.ent_username.get()
+        password = register_page.ent_password.get()
+        password_2 = register_page.ent_password_again.get()
         print("User registering:")
-        print(r_p.ent_username.get())
-        print(r_p.ent_email.get())
-        pw_match = r_p.ent_password.get() != r_p.ent_password_again.get()
-        print("Passwords", "" if pw_match else "don't", "match.")
-        # TODO
+        print(username)
+        print(email)
+
+        errors = []
+        if not re.fullmatch(r'[a-zA-Z0-9]{4,20}', username):
+            errors.append("Username is invalid. \n 4-20 characters, a-z A-Z 0-9 are allowed.")
+        if not re.fullmatch(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+', email):
+            errors.append("Email is invalid.")
+        if len(password) < 6:
+            errors.append("Password too short. (6-64)")
+        if len(password) > 64:
+            errors.append("Password too long. (6-64)")
+        if password != password_2:
+            errors.append("Passwords don't match.")
+
+        with Database("movie-manager.db") as db:
+            if db.user_exists(username=username):
+                errors.append("User already exists with that username.")
+            if db.user_exists(email=email):
+                errors.append("User already exists with that email address.")
+            register_page.display_errors(errors)
+            if len(errors) > 0:
+                print("Register unsuccessful.")
+                return
+            db.create_user(username, email, password)
+            print("Register successful.")
+            self.show_page('LoginPage')
 
     def handle_return(self):
-        print(self._current_width, self._current_height)
-        print(self.current_page)
+        # print(self._current_width, self._current_height)
+        # print(self.current_page)
         if self.current_page == "RegisterPage":
             self.register_user()
         elif self.current_page == "LoginPage":
@@ -122,7 +171,7 @@ class App(customtkinter.CTk):
         if path is not None and path != 0 and path != "":
             img_conf = self.api.configs.get('images')
             # print(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
-            response = requests.get(img_conf.get('base_url') + img_conf.get(typ+'_sizes')[size]+path)
+            response = requests.get(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
             return Image.open(BytesIO(response.content))
 
     def search_movies(self, title):
@@ -132,10 +181,10 @@ class App(customtkinter.CTk):
         # m_p.progress_bar.start()
         search_frame.clear_results()
         request_response = self.api.fetch_movies(title)
-        print(request_response)
+        # print(request_response)
         results = sorted(
             request_response.get('results'),
-            key=lambda x: difflib.SequenceMatcher(a=x['title'].lower(), b=title.lower()).ratio()**2 * x['popularity'],
+            key=lambda x: difflib.SequenceMatcher(a=x['title'].lower(), b=title.lower()).ratio() ** 2 * x['popularity'],
             reverse=True
         )
         for result in results:
@@ -160,4 +209,3 @@ if __name__ in {"__main__", "__mp_main__"}:
     app.attributes('-topmost', 0)
 
     app.mainloop()
-

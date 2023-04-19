@@ -1,4 +1,6 @@
 import pathlib
+from tkinter import BOTTOM
+
 import customtkinter
 from PIL import Image
 from src.pages.Page import Page
@@ -12,11 +14,11 @@ class RegisterPage(customtkinter.CTkFrame, Page):
 
     @staticmethod
     def get_page_size():
-        return "600x740"
+        return "600x750"
 
     @staticmethod
     def get_page_min_size():
-        return "462x710"
+        return "462x750"
 
     def __init__(self, master: customtkinter.CTkFrame, controller, **kwargs):
         super().__init__(master, **kwargs)
@@ -50,15 +52,18 @@ class RegisterPage(customtkinter.CTkFrame, Page):
         self.ent_password_again = customtkinter.CTkEntry(master=self, width=400, corner_radius=5, placeholder_text="Password Confirmation", show="•")
         self.ent_password_again.pack(anchor="center", pady=10, padx=30)
 
+        self.lbl_errors = customtkinter.CTkLabel(master=self, text="", corner_radius=25, text_color="red")
+        self.lbl_errors.pack(anchor="center")
+
         self.register_button = customtkinter.CTkButton(
             master=self,
             width=200,
             height=40,
             corner_radius=20,
             text="Register",
-            command= controller.register_user
+            command=lambda: controller.register_user()
         )
-        self.register_button.pack(anchor="center", pady=(25, 50), padx=20)
+        self.register_button.pack(side=BOTTOM, anchor="center", pady=(25, 25), padx=20)
 
         self.btn_back = customtkinter.CTkButton(
             master=self,
@@ -70,3 +75,9 @@ class RegisterPage(customtkinter.CTkFrame, Page):
             text_color="#5584CC"
         )
         self.btn_back.place(anchor="nw", x=20, y=20)
+
+    def display_errors(self, errors):
+        error_text = ""
+        for error in errors:
+            error_text += error + '\n'
+        self.lbl_errors.configure(text=error_text)

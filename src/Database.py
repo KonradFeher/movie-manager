@@ -1,6 +1,8 @@
+import contextlib
 import os
 import sqlite3
 from sqlite3 import IntegrityError
+
 
 import bcrypt
 
@@ -8,9 +10,19 @@ from src.models.User import User
 
 
 class Database:
-    def __init__(self):
-        self.con = sqlite3.connect("movie-manager.db")
+
+    def __enter__(self):
+        self.con = sqlite3.connect(self.file_path)
         self.cur = self.con.cursor()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.con.close()
+
+    def __init__(self, file_path="movie-manager.db"):
+        self.file_path = file_path
+        self.con = None
+        self.cur = None
 
     def fetch_user_by_email(self, email):
         self.cur.execute(f'SELECT * FROM users WHERE email LIKE "{email}"')
@@ -21,7 +33,7 @@ class Database:
         else:
             watched_ids = self.fetch_watched_by_email(email)
             watchlist_ids = self.fetch_watchlist_by_email(email)
-            print(User(res[0][0], res[0][1], watched_ids, watchlist_ids))
+            # print(User(res[0][0], res[0][1], watched_ids, watchlist_ids))
             return User(res[0][0], res[0][1], watched_ids, watchlist_ids)
 
     def create_user(self, username, email, password):
@@ -29,7 +41,8 @@ class Database:
         if len(self.cur.fetchall()) == 1:
             return False
 
-        self.cur.execute(f'INSERT INTO users VALUES ( "{username}", "{email}", "{self.hash_pw(password)}" )')
+        self.cur.execute(f'INSERT INTO users VALUES ( "{username}", "{email}", "{self.hash_pw(password).decode("utf-8")}" )')
+        self.con.commit()
         if self.cur.rowcount == 1:
             print("User successfully created")
             return True
@@ -46,6 +59,7 @@ class Database:
 
     def delete_from_watched(self, email, movie_id):
         self.cur.execute(f'DELETE FROM watched WHERE email LIKE "{email}" AND movie_id = {movie_id}')
+        self.con.commit()
         if self.cur.rowcount:
             print(f"Movie {movie_id} successfully removed from watched list.")
         else:
@@ -53,6 +67,7 @@ class Database:
 
     def delete_from_watchlist(self, email, movie_id):
         self.cur.execute(f'DELETE FROM watchlist WHERE email LIKE "{email}" AND movie_id = {movie_id}')
+        self.con.commit()
         if self.cur.rowcount:
             print(f"Movie {movie_id} successfully removed from watchlist.")
         else:
@@ -63,6 +78,7 @@ class Database:
         self.delete_from_watchlist(email, movie_id)
         try:
             self.cur.execute(f'INSERT INTO watched VALUES ( "{email}", {movie_id} )')
+            self.con.commit()
         except IntegrityError:
             print("Already added.")
             return False
@@ -73,13 +89,13 @@ class Database:
     def add_to_watchlist(self, email, movie_id):
         try:
             self.cur.execute(f'INSERT INTO watchlist VALUES ( "{email}", {movie_id} )')
+            self.con.commit()
         except IntegrityError:
             print("Already added.")
             return False
         else:
             print(f"Movie {movie_id} successfully added to watchlist.")
             return True
-
 
     @staticmethod
     def hash_pw(password):
@@ -91,21 +107,63 @@ class Database:
         self.cur.execute('CREATE TABLE watched ( email VARCHAR(64), movie_id INTEGER, PRIMARY KEY (email, movie_id) )')
         self.cur.execute('CREATE TABLE watchlist ( email VARCHAR(64), movie_id INTEGER, PRIMARY KEY (email, movie_id) )')
         self.cur.execute(
-            f'INSERT INTO users VALUES ("dummy_username", "dummy_email@gmail.com","{self.hash_pw("123456")}")')
+            f'INSERT INTO users VALUES ("dummy_username", "dummy_email@gmail.com", "{self.hash_pw("123456")}")')
         self.cur.execute(f'INSERT INTO watched VALUES ("dummy_email@gmail.com", 1)')
         self.cur.execute(f'INSERT INTO watched VALUES ("dummy_email@gmail.com", 3)')
         self.cur.execute(f'INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 5)')
         self.cur.execute(f'INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 70)')
         self.cur.execute(f'INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 29)')
+        self.con.commit()
+
+    def verify_credentials(self, username_or_email, password):
+        self.cur.execute(f'SELECT * FROM users WHERE username LIKE "{username_or_email}" OR email LIKE "{username_or_email}"')
+        res = self.cur.fetchall()
+        # print(res)
+        if len(res) == 0:
+            print("User not found")
+            return False
+        for result in res:
+            user_data = result
+            # print(password.encode('utf-8'), user_data[2].encode('utf-8'),)
+            if bcrypt.checkpw(password.encode('utf-8'), user_data[2].encode('utf-8')):
+                user = User(user_data[0], user_data[1],
+                            self.fetch_watched_by_email(user_data[1]),
+                            self.fetch_watchlist_by_email(user_data[1]))
+                # print(user)
+                return user
+        return False # TODO
+
+    def user_exists(self, email='', username=''):
+        if email == '' and username == '':
+            return True
+        if email != '':
+            self.cur.execute(f'SELECT * FROM users WHERE email LIKE "{email}"')
+            res = self.cur.fetchall()
+            if len(res) == 0:
+                return False
+            return True
+        if username != '':
+            self.cur.execute(f'SELECT * FROM users WHERE username LIKE "{username}"')
+            res = self.cur.fetchall()
+            if len(res) == 0:
+                return False
+            return True
 
 
 if __name__ == '__main__':
     os.remove("movie-manager.db")
-    db = Database()
-    db.create_tables()
 
-    # db.fetch_user_by_email("dummy_email@gmail.com")
-    # db.add_to_watchlist("dummy_email@gmail.com", 4)
-    # db.add_to_watched("dummy_email@gmail.com", 4)
+    with Database('movie-manager.db') as db:
+        db.create_tables()
+        db.cur.execute(f'SELECT * FROM users WHERE username LIKE "dummy_email@gmail.com" OR email LIKE "dummy_email@gmail.com"')
+        print(db.cur.fetchall())
+        db.cur.execute(f'SELECT * FROM users WHERE username LIKE "dummy_username" OR email LIKE "dummy_username"')
+        print(db.cur.fetchall())
+        db.cur.execute('SELECT * FROM users')
+        print(db.cur.fetchall())
+        db.fetch_user_by_email("dummy_email@gmail.com")
+
+        # db.add_to_watchlist("dummy_email@gmail.com", 4)
+        # db.add_to_watched("dummy_email@gmail.com", 4)
 
 

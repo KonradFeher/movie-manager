@@ -22,10 +22,6 @@ class MainPage(customtkinter.CTkFrame, Page):
     def get_page_min_size():
         return "920x740"
 
-    @staticmethod
-    def get_page_max_size():
-        return "920x740"
-
     def __init__(self, master: customtkinter.CTkFrame, controller, **kwargs):
         super().__init__(master, **kwargs)
         # self.default_poster = Image.open(pathlib.Path("assets", "default_poster.jpg"))
