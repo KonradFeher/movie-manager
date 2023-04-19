@@ -1,5 +1,4 @@
 import functools
-
 import requests
 from urllib3.exceptions import HTTPError
 from urllib.parse import quote_plus

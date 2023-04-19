@@ -1,6 +1,4 @@
-import asyncio
 import pathlib
-
 import customtkinter
 from PIL import Image
 

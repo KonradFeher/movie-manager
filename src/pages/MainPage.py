@@ -1,13 +1,8 @@
-import json
 import pathlib
-
 import customtkinter
 from PIL import Image
 import tkinter
-from src.models.User import User
 from src.pages.Page import Page
-import asyncio
-
 from src.pages.SearchFrame import SearchFrame
 from src.pages.WatchedFrame import WatchedFrame
 from src.pages.WatchlistFrame import WatchlistFrame

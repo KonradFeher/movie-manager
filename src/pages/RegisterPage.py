@@ -1,7 +1,6 @@
 import pathlib
 import customtkinter
 from PIL import Image
-from src.models.User import User
 from src.pages.Page import Page
 
 

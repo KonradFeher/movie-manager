@@ -3,7 +3,6 @@ from tkinter import *
 from PIL import Image
 import customtkinter
 import requests
-from models.User import User
 from src.API import APIaccess
 from src.pages.MainPage import MainPage
 from src.pages.LoginPage import LoginPage
