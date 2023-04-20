@@ -58,7 +58,7 @@ class APIaccess(object):
         except Exception as err:
             print(f'Other error occurred: {err}')
 
-    def get_movie_details(self, movie_id):
+    def fetch_movie_details(self, movie_id):
         try:
             params = {
                 'api_key': self._API_KEY
@@ -68,6 +68,104 @@ class APIaccess(object):
                 # with open("details_ex.json", "w") as w:
                 #     w.write(json.dumps(result.json()))
                 return result.json()
+            else:
+                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def fetch_similar_movies(self, movie_id):
+        try:
+            params = {
+                'api_key': self._API_KEY
+            }
+            result = requests.get("https://api.themoviedb.org/3/movie/" + str(movie_id) + "/similar", params)
+            if result.status_code == 200:
+                return result.json().get('results')
+            else:
+                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def fetch_recommendations(self, movie_id):
+        try:
+            params = {
+                'api_key': self._API_KEY
+            }
+            result = requests.get("https://api.themoviedb.org/3/movie/" + str(movie_id) + "/recommendations", params)
+            if result.status_code == 200:
+                return result.json().get('results')
+            else:
+                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def fetch_popular_movies(self):
+        try:
+            params = {
+                'api_key': self._API_KEY
+            }
+            result = requests.get("https://api.themoviedb.org/3/movie/popular",
+                                  params)
+            if result.status_code == 200:
+                return result.json().get('results')
+            else:
+                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def fetch_upcoming_movies(self):
+        try:
+            params = {
+                'api_key': self._API_KEY
+            }
+            result = requests.get("https://api.themoviedb.org/3/movie/upcoming",
+                                  params)
+            if result.status_code == 200:
+                return result.json().get('results')
+            else:
+                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def fetch_top_rated_movies(self, pages):
+        try:
+            movies = []
+            for page in range(pages):
+                params = {
+                    'api_key': self._API_KEY,
+                    'page': 1 + page
+                }
+                result = requests.get("https://api.themoviedb.org/3/movie/top_rated", params)
+                print(f'page {page}:', result.json())
+                if result.status_code == 200:
+                    movies.extend(result.json().get('results'))
+                else:
+                    raise Exception("Error while fetching movie details, response status code:", result.status_code)
+            print(movies)
+            return movies
+        except HTTPError as http_err:
+            print(f'HTTP error occurred: {http_err}')
+        except Exception as err:
+            print(f'Other error occurred: {err}')
+
+    def fetch_actors(self, movie_id):
+        try:
+            params = {
+                'api_key': self._API_KEY
+            }
+            result = requests.get(f"https://api.themoviedb.org/3/movie/{movie_id}/credits", params)
+            if result.status_code == 200:
+                return [actor for actor in result.json().get('cast')]
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
         except HTTPError as http_err:

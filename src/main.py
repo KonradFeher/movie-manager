@@ -24,24 +24,11 @@ class App(customtkinter.CTk):
         self.current_page = None
         self.active_user = None
         self.api = APIaccess('352322dd49f426559fac64881f6ecbb9')
-
-        ###############################################################
-        #                    API TEST ZONE                            #
-        ###############################################################
-
-        # print(self.api.fetch_movies("The Big Lebowski"))
-        # print(self.api.fetch_movies("Cars"))
-        # print(self.api.fetch_movies("Finding Nemo"))
-
-        ###############################################################
-
         customtkinter.set_appearance_mode("system")
         customtkinter.set_default_color_theme("dark-blue")  # #2fa572
         self.minsize(width=520, height=600)
         self.title("MovieManager")
         self.geometry("600x580+300+100")
-        # self.center_window(600, 580)
-        # self.resizable(False, False)
 
         self.container = customtkinter.CTkFrame(self, height=480, width=720)
         self.container.pack(side="top", fill="both", expand=True)
@@ -58,26 +45,21 @@ class App(customtkinter.CTk):
 
         self.show_page("LoginPage")
         self.current_page = "LoginPage"
-        # self.show_page("MainPage")
-        # self.pages[MainPage].show_frame("MovieFrame")
 
-    def show_page(self, cont):
+    def show_page(self, cont, first=False):
         self.focus_set()
         self.current_page = cont
         page = eval(cont)
         frame = self.pages[page]
         frame.tkraise()
         self.title(page.get_page_title())
-        # print(page.get_page_min_size())
         minsize = page.get_page_min_size().split('x')
         self.minsize(width=int(minsize[0]), height=int(minsize[1]))
         if page.get_page_max_size() is not None:
             maxsize = page.get_page_max_size().split('x')
             self.maxsize(width=int(maxsize[0]), height=int(maxsize[1]))
-        # print(page.get_page_size())
         self.geometry(page.get_page_size())
-        # self.center_window()
-        if page == MainPage:
+        if page == MainPage and first:
             self.search_movies("The Big Lebowski")
 
     # https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
@@ -105,8 +87,8 @@ class App(customtkinter.CTk):
 
         print("User login attempt:", username_or_email)
         # backdoor
-        if username_or_email == 'letmein':
-            self.show_page("MainPage")
+        # if username_or_email == 'letmein':
+        #     self.show_page("MainPage")
 
         # if either of the fields is empty, stop login attempt
         if len(username_or_email) == 0 or len(password) == 0:
@@ -119,7 +101,7 @@ class App(customtkinter.CTk):
                 login_page.display_incorrect(show=False)
                 self.active_user = user
                 print("Successful login")
-                self.show_page('MainPage')
+                self.show_page('MainPage', first=True)
                 return
             else:
                 print("Unsuccessful login")
@@ -138,9 +120,9 @@ class App(customtkinter.CTk):
         print(email)
 
         errors = []
-        if not re.fullmatch(r'[a-zA-Z0-9]{4,20}', username):
+        if not re.fullmatch(r'[a-zA-Z\d]{4,20}', username):
             errors.append("Username is invalid. \n 4-20 characters, a-z A-Z 0-9 are allowed.")
-        if not re.fullmatch(r'([A-Za-z0-9]+[.-_])*[A-Za-z0-9]+@[A-Za-z0-9-]+(\.[A-Z|a-z]{2,})+', email):
+        if not re.fullmatch(r'([A-Za-z\d]+[.-_])*[A-Za-z\d]+@[A-Za-z\d-]+(\.[A-Z|a-z]{2,})+', email):
             errors.append("Email is invalid.")
         if len(password) < 6:
             errors.append("Password too short. (6-64)")
@@ -163,8 +145,6 @@ class App(customtkinter.CTk):
             self.show_page('LoginPage')
 
     def handle_return(self):
-        # print(self._current_width, self._current_height)
-        # print(self.current_page)
         if self.current_page == "RegisterPage":
             self.register_user()
         elif self.current_page == "LoginPage":
@@ -175,9 +155,6 @@ class App(customtkinter.CTk):
     def get_movie_image(self, path, typ='poster', size=1):
         if path is not None and path != 0 and path != "":
             img_conf = self.api.configs.get('images')
-            # print(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
-            # print(img_conf.get(typ + '_sizes'))
-            # print(img_conf.get(typ + '_sizes')[size])
             response = requests.get(img_conf.get('base_url') + img_conf.get(typ + '_sizes')[size] + path)
             return Image.open(BytesIO(response.content))
         else:
@@ -186,51 +163,49 @@ class App(customtkinter.CTk):
     def search_movies(self, title):
         print("Searching for", title)
         search_frame = self.pages[MainPage].frames[SearchFrame]
-        # m_p.progress_bar.grid(row=4, column=1, pady=(0, 30))
-        # m_p.progress_bar.start()
-        # search_frame.clear_results()
+        search_frame.seg_categories.set("Search")
         search_frame.reset_results_frame()
         request_response = self.api.fetch_movies(title)
-        # print(request_response)
         results = sorted(
             request_response.get('results'),
             key=lambda x: difflib.SequenceMatcher(a=x['title'].lower(), b=title.lower()).ratio() ** 2 * x['popularity'],
             reverse=True
         )
         for result in results:
-            # print(result['title'], "-", result['popularity'] *
-            #   difflib.SequenceMatcher(a=result['title'].lower(), b=title.lower()).ratio()**2)
-            # self.update_idletasks()
             try:
                 search_frame.add_result(result)
-                print(result)
             except Exception as e:
                 print("HUH?", e)
         search_frame.refresh_results()
-        # m_p.progress_bar.stop()
-        # m_p.progress_bar.grid_forget()
 
     def show_movie(self, movie):
-        # self.pages[MainPage].frames[MovieFrame].load_movie(movie)
-        movie_details = self.api.get_movie_details(movie.get('id'))
-        self.pages[MainPage].frames[MovieFrame].load_movie(movie_details)
+        movie_details = self.api.fetch_movie_details(movie.get('id'))
+        movie_actors = self.api.fetch_actors(movie.get('id'))
+        self.pages[MainPage].frames[MovieFrame].load_movie(movie_details, movie_actors)
         self.pages[MainPage].show_frame('MovieFrame')
 
     def add_to_watchlist(self, movie):
+        self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="disabled")
+        self.pages[MainPage].frames[MovieFrame].btn_watched_it.configure(state="normal")
         with Database("movie-manager.db") as db:
             db.add_to_watchlist(self.active_user.email, movie.get('id'))
+            self.active_user.watchlist_ids.append(movie.get('id'))
 
     def add_to_watched(self, movie):
+        self.pages[MainPage].frames[MovieFrame].btn_watched_it.configure(state="disabled")
+        self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="normal")
         with Database("movie-manager.db") as db:
             db.add_to_watched(self.active_user.email, movie.get('id'))
+            self.active_user.watched_ids.append(movie.get('id'))
 
     def go_to_watched(self):
         self.pages[MainPage].frames[WatchedFrame].reset_results_frame()
         with Database("movie-manager.db") as db:
             watched_ids = db.fetch_watched_by_email(self.active_user.email)
-            print(watched_ids)
+            # print(watched_ids)
+            watched_ids.reverse()
         for wid in watched_ids:
-            movie = self.api.get_movie_details(wid)
+            movie = self.api.fetch_movie_details(wid)
             self.pages[MainPage].frames[WatchedFrame].add_result(movie)
         self.pages[MainPage].frames[WatchedFrame].refresh_results()
         self.pages[MainPage].show_frame("WatchedFrame")
@@ -240,11 +215,42 @@ class App(customtkinter.CTk):
         with Database("movie-manager.db") as db:
             watchlist_ids = db.fetch_watchlist_by_email(self.active_user.email)
             print(watchlist_ids)
+            watchlist_ids.reverse()
         for wid in watchlist_ids:
-            movie = self.api.get_movie_details(wid)
+            movie = self.api.fetch_movie_details(wid)
             self.pages[MainPage].frames[WatchlistFrame].add_result(movie)
         self.pages[MainPage].frames[WatchlistFrame].refresh_results()
         self.pages[MainPage].show_frame("WatchlistFrame")
+
+    def load_movies(self, movie=None, t="recommendations"):
+        if movie is None:
+            movie = {'id': 115}
+        search_frame = self.pages[MainPage].frames[SearchFrame]
+        search_frame.reset_results_frame()
+        results = None
+        t = t.lower()
+        print(t)
+        if t == "recommendations":
+            results = self.api.fetch_recommendations(movie.get('id'))
+        if t == "similar":
+            results = self.api.fetch_similar_movies(movie.get('id'))
+        if t == "top rated":
+            results = self.api.fetch_top_rated_movies(pages=3)
+        if t == "popular":
+            results = self.api.fetch_popular_movies()
+        if t == "upcoming":
+            results = self.api.fetch_upcoming_movies()
+
+        print('results:', results)
+
+        for result in results:
+            try:
+                search_frame.add_result(result)
+            except Exception as e:
+                print("HUH???", e)
+        search_frame.refresh_results()
+        self.show_page('MainPage')
+        self.pages[MainPage].show_frame('SearchFrame')
 
 
 if __name__ in {"__main__", "__mp_main__"}:

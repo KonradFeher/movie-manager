@@ -11,6 +11,17 @@ class SearchFrame(customtkinter.CTkFrame):
         self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
         self.controller = controller
         self.result_columns = 3
+
+        self.seg_categories = customtkinter.CTkSegmentedButton(
+            master=self,
+            values=["Search", "Top Rated", "Popular", "Upcoming"],
+            command=lambda e: self.categories_handler())
+        self.seg_categories.pack(padx=20, pady=10)
+        self.seg_categories.set("Search")  # set initial value
+
+        self.lbl_page_title = customtkinter.CTkLabel(master=self, text="Search", font=('Roboto', 22, 'bold'))
+        self.lbl_page_title.pack(pady=10)
+
         self.lbl_movie_title = customtkinter.CTkLabel(master=self, text="Search for a movie title!", width=500)
         self.lbl_movie_title.pack(pady=(20, 5))
         self.ent_movie_title = customtkinter.CTkEntry(master=self, width=400, corner_radius=5,
@@ -121,3 +132,9 @@ class SearchFrame(customtkinter.CTkFrame):
             size=(200, 300)
         )
         label.configure(image=img_poster)
+
+    def categories_handler(self):
+        cat = self.seg_categories.get()
+        if cat != "Search":
+            self.controller.load_movies(t=cat.lower())
+

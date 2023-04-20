@@ -59,11 +59,16 @@ class MovieFrame(customtkinter.CTkFrame):
                                                  wraplength=300, justify="right")
         self.lbl_genres.pack(anchor="e", pady=5, padx=20)
 
+        self.lbl_actors = customtkinter.CTkLabel(master=self, text="actors", font=("Roboto", 12),
+                                                 wraplength=300, justify="right")
+        self.lbl_actors.pack(anchor="e", pady=5, padx=20)
+
         self.btn_watchlist = customtkinter.CTkButton(
             master=self, text="Add to Watchlist",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
-            command=lambda: controller.add_to_watchlist(self.movie))
+            command=lambda: controller.add_to_watchlist(self.movie)
+        )
         self.btn_watchlist.pack(anchor="e", pady=5, padx=20)
 
         self.btn_watched_it = customtkinter.CTkButton(
@@ -73,7 +78,21 @@ class MovieFrame(customtkinter.CTkFrame):
             command=lambda:  controller.add_to_watched(self.movie))
         self.btn_watched_it.pack(anchor="e", pady=5, padx=20)
 
-    def load_movie(self, movie):
+        self.btn_similar = customtkinter.CTkButton(
+            master=self, text="Similar Movies",
+            font=("Roboto", 20, "bold"),
+            bg_color="transparent",
+            command=lambda:  controller.load_movies(self.movie, t='similar'))
+        self.btn_similar.pack(anchor="e", pady=5, padx=20)
+
+        self.btn_recommendations = customtkinter.CTkButton(
+            master=self, text="Recommendations",
+            font=("Roboto", 20, "bold"),
+            bg_color="transparent",
+            command=lambda:  controller.load_movies(self.movie, t='recommendations'))
+        self.btn_recommendations.pack(anchor="e", pady=5, padx=20)
+
+    def load_movie(self, movie, actors):
         # movie = self.controller.api.fetch_movies("The Big Lebowski").get('results')[0]
         print(movie)
         self.movie = movie
@@ -116,3 +135,17 @@ class MovieFrame(customtkinter.CTkFrame):
         self.lbl_vote_count.configure(text=f'Rating Count\n'
                                            f'{movie.get("vote_count")}')
         self.lbl_genres.configure(text=f'Genres\n{", ".join([x["name"] for x in movie.get("genres")])}')
+
+        top_actors = ", ".join([actor.get("original_name") for actor in actors if actor.get("order") < 3])
+        self.lbl_genres.configure(text=f'Top Actors\n{top_actors}')
+
+        if movie.get('id') in self.controller.active_user.watchlist_ids:
+            self.btn_watchlist.configure(state='disabled')
+        else:
+            self.btn_watchlist.configure(state='normal')
+
+        if movie.get('id') in self.controller.active_user.watched_ids and \
+                movie.get('id') not in self.controller.active_user.watchlist_ids:
+            self.btn_watched_it.configure(state='disabled')
+        else:
+            self.btn_watched_it.configure(state='normal')

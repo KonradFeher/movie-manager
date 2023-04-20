@@ -12,22 +12,9 @@ class WatchlistFrame(customtkinter.CTkFrame):
         self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
         self.controller = controller
         self.result_columns = 3
-        self.lbl_movie_title = customtkinter.CTkLabel(master=self, text="Watchlist", width=500)
-        self.lbl_movie_title.pack(pady=(20, 5))
-        self.ent_movie_title = customtkinter.CTkEntry(master=self, width=400, corner_radius=5,
-                                                      placeholder_text="The Big Lebowski", border_width=3)
-        self.ent_movie_title.pack()
 
-        self.btn_search = customtkinter.CTkButton(
-            master=self,
-            width=200,
-            height=40,
-            corner_radius=20,
-            text="Search",
-            command=lambda: controller.search_watchlist(self.ent_movie_title.get())
-            # TODO
-        )
-        self.btn_search.pack(pady=(20, 20))
+        self.lbl_page_title = customtkinter.CTkLabel(master=self, text="My Watchlist", font=('Roboto', 22, 'bold'))
+        self.lbl_page_title.pack(pady=10)
 
         self.frm_results = customtkinter.CTkScrollableFrame(master=self, height=555)
         self.frm_results.grid_rowconfigure("all", weight=1)
