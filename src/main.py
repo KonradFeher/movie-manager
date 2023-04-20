@@ -1,6 +1,5 @@
 import re
 from io import BytesIO
-from tkinter import *
 from PIL import Image
 import customtkinter
 import requests

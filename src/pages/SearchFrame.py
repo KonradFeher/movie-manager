@@ -137,4 +137,3 @@ class SearchFrame(customtkinter.CTkFrame):
         cat = self.seg_categories.get()
         if cat != "Search":
             self.controller.load_movies(t=cat.lower())
-

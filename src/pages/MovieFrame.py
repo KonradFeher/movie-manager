@@ -1,6 +1,5 @@
 import math
 import pathlib
-from tkinter import LEFT, RIGHT, TOP, BOTTOM
 
 import customtkinter
 from PIL import Image
@@ -75,21 +74,21 @@ class MovieFrame(customtkinter.CTkFrame):
             master=self, text="Watched it!",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
-            command=lambda:  controller.add_to_watched(self.movie))
+            command=lambda: controller.add_to_watched(self.movie))
         self.btn_watched_it.pack(anchor="e", pady=5, padx=20)
 
         self.btn_similar = customtkinter.CTkButton(
             master=self, text="Similar Movies",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
-            command=lambda:  controller.load_movies(self.movie, t='similar'))
+            command=lambda: controller.load_movies(self.movie, t='similar'))
         self.btn_similar.pack(anchor="e", pady=5, padx=20)
 
         self.btn_recommendations = customtkinter.CTkButton(
             master=self, text="Recommendations",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
-            command=lambda:  controller.load_movies(self.movie, t='recommendations'))
+            command=lambda: controller.load_movies(self.movie, t='recommendations'))
         self.btn_recommendations.pack(anchor="e", pady=5, padx=20)
 
     def load_movie(self, movie, actors):
@@ -97,7 +96,7 @@ class MovieFrame(customtkinter.CTkFrame):
         print(movie)
         self.movie = movie
 
-        # todo: link up buttons, GRID IT UP
+        # todo: GRID IT UP
         self.lbl_title.configure(text=f'{movie.get("title")}\n'
                                       f'({movie.get("release_date").split("-")[0]})')
 

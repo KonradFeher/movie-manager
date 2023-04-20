@@ -1,0 +1,3 @@
+Megpróbálkoztam a többi class tesztelésével is, rááldoztam egy délutánt de sehogy sem sikerült, sajnos.
+Emellett Van még 3 másik beadandóm, és nagyon nincs 3 teljes napom amit rá tudnék áldozni.
+A GUI appok tesztelése nehéz... 😥

@@ -1,19 +1,12 @@
-import contextlib
-import os
 import sqlite3
 from sqlite3 import IntegrityError
-
-
 import bcrypt
-
 from src.models.User import User
 
 
 class Database:
 
     def __enter__(self):
-        self.con = sqlite3.connect(self.file_path)
-        self.cur = self.con.cursor()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
@@ -21,8 +14,8 @@ class Database:
 
     def __init__(self, file_path="movie-manager.db"):
         self.file_path = file_path
-        self.con = None
-        self.cur = None
+        self.con = sqlite3.connect(self.file_path)
+        self.cur = self.con.cursor()
 
     def fetch_user_by_email(self, email):
         self.cur.execute(f'SELECT * FROM users WHERE email LIKE "{email}"')
@@ -108,11 +101,11 @@ class Database:
         self.cur.execute('CREATE TABLE watchlist ( email VARCHAR(64), movie_id INTEGER, PRIMARY KEY (email, movie_id) )')
         self.cur.execute(
             f'INSERT INTO users VALUES ("dummy_username", "dummy_email@gmail.com", "{self.hash_pw("123456")}")')
-        self.cur.execute(f'INSERT INTO watched VALUES ("dummy_email@gmail.com", 1)')
-        self.cur.execute(f'INSERT INTO watched VALUES ("dummy_email@gmail.com", 3)')
-        self.cur.execute(f'INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 5)')
-        self.cur.execute(f'INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 70)')
-        self.cur.execute(f'INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 29)')
+        self.cur.execute('INSERT INTO watched VALUES ("dummy_email@gmail.com", 1)')
+        self.cur.execute('INSERT INTO watched VALUES ("dummy_email@gmail.com", 3)')
+        self.cur.execute('INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 5)')
+        self.cur.execute('INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 70)')
+        self.cur.execute('INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 29)')
         self.con.commit()
 
     def verify_credentials(self, username_or_email, password):
@@ -120,7 +113,7 @@ class Database:
         res = self.cur.fetchall()
         # print(res)
         if len(res) == 0:
-            print("User not found")
+            # print("User not found")
             return False
         for result in res:
             user_data = result
@@ -131,7 +124,7 @@ class Database:
                             self.fetch_watchlist_by_email(user_data[1]))
                 # print(user)
                 return user
-        return False # TODO
+        return False
 
     def user_exists(self, email='', username=''):
         if email == '' and username == '':
@@ -148,22 +141,3 @@ class Database:
             if len(res) == 0:
                 return False
             return True
-
-
-if __name__ == '__main__':
-    os.remove("movie-manager.db")
-
-    with Database('movie-manager.db') as db:
-        db.create_tables()
-        db.cur.execute(f'SELECT * FROM users WHERE username LIKE "dummy_email@gmail.com" OR email LIKE "dummy_email@gmail.com"')
-        print(db.cur.fetchall())
-        db.cur.execute(f'SELECT * FROM users WHERE username LIKE "dummy_username" OR email LIKE "dummy_username"')
-        print(db.cur.fetchall())
-        db.cur.execute('SELECT * FROM users')
-        print(db.cur.fetchall())
-        db.fetch_user_by_email("dummy_email@gmail.com")
-
-        # db.add_to_watchlist("dummy_email@gmail.com", 4)
-        # db.add_to_watched("dummy_email@gmail.com", 4)
-
-

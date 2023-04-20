@@ -4,7 +4,6 @@ import customtkinter
 from PIL import Image
 
 
-# TODO SearchFrame and other reformattings can be made
 class WatchlistFrame(customtkinter.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)

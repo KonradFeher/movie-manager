@@ -130,3 +130,6 @@ dmypy.json
 
 
 .idea/
+/src/configs_atm.json
+/src/details_ex.json
+/src/example_result.json

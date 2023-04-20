@@ -1,8 +1,6 @@
 import functools
-import json
 
 import requests
-from urllib3.exceptions import HTTPError
 from urllib.parse import quote_plus
 
 
@@ -29,10 +27,9 @@ class APIaccess(object):
                 return result.json()
             else:
                 raise Exception("Error while fetching configuration, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_movies(self, query, page=1, year=None, include_adult=False):
         try:
@@ -53,10 +50,9 @@ class APIaccess(object):
                 return result.json()
             else:
                 raise Exception("Error while fetching movies, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_movie_details(self, movie_id):
         try:
@@ -70,10 +66,9 @@ class APIaccess(object):
                 return result.json()
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_similar_movies(self, movie_id):
         try:
@@ -85,10 +80,9 @@ class APIaccess(object):
                 return result.json().get('results')
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_recommendations(self, movie_id):
         try:
@@ -100,10 +94,9 @@ class APIaccess(object):
                 return result.json().get('results')
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_popular_movies(self):
         try:
@@ -116,10 +109,9 @@ class APIaccess(object):
                 return result.json().get('results')
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_upcoming_movies(self):
         try:
@@ -132,10 +124,9 @@ class APIaccess(object):
                 return result.json().get('results')
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_top_rated_movies(self, pages):
         try:
@@ -146,17 +137,15 @@ class APIaccess(object):
                     'page': 1 + page
                 }
                 result = requests.get("https://api.themoviedb.org/3/movie/top_rated", params)
-                print(f'page {page}:', result.json())
                 if result.status_code == 200:
                     movies.extend(result.json().get('results'))
                 else:
                     raise Exception("Error while fetching movie details, response status code:", result.status_code)
             print(movies)
             return movies
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
 
     def fetch_actors(self, movie_id):
         try:
@@ -168,7 +157,6 @@ class APIaccess(object):
                 return [actor for actor in result.json().get('cast')]
             else:
                 raise Exception("Error while fetching movie details, response status code:", result.status_code)
-        except HTTPError as http_err:
-            print(f'HTTP error occurred: {http_err}')
         except Exception as err:
-            print(f'Other error occurred: {err}')
+            print(f'Error occurred: {err}')
+            return None
