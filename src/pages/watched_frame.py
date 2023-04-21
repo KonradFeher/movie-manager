@@ -3,7 +3,7 @@ import pathlib
 import customtkinter
 from PIL import Image
 
-from src.pages.MainFrame import MainFrame
+from src.pages.main_frame import MainFrame
 
 
 class WatchedFrame(MainFrame):

@@ -3,11 +3,11 @@ import customtkinter
 from PIL import Image
 import tkinter
 
-from src.pages.MovieFrame import MovieFrame
-from src.pages.Page import Page
-from src.pages.SearchFrame import SearchFrame
-from src.pages.WatchedFrame import WatchedFrame
-from src.pages.WatchlistFrame import WatchlistFrame
+from src.pages.movie_frame import MovieFrame
+from src.pages.page import Page
+from src.pages.search_frame import SearchFrame
+from src.pages.watched_frame import WatchedFrame
+from src.pages.watchlist_frame import WatchlistFrame
 
 
 class MainPage(customtkinter.CTkFrame, Page):

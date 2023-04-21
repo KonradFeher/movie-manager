@@ -4,17 +4,17 @@ from PIL import Image
 import customtkinter
 import requests
 from src.API import APIaccess
-from src.Database import Database
-from src.pages.MainPage import MainPage
-from src.pages.LoginPage import LoginPage
-from src.pages.MovieFrame import MovieFrame
-from src.pages.RegisterPage import RegisterPage
+from src.database import Database
+from src.pages.main_page import MainPage
+from src.pages.login_page import LoginPage
+from src.pages.movie_frame import MovieFrame
+from src.pages.register_page import RegisterPage
 import difflib
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
-from src.pages.SearchFrame import SearchFrame
-from src.pages.WatchedFrame import WatchedFrame
-from src.pages.WatchlistFrame import WatchlistFrame
+from src.pages.search_frame import SearchFrame
+from src.pages.watched_frame import WatchedFrame
+from src.pages.watchlist_frame import WatchlistFrame
 
 
 class App(customtkinter.CTk):

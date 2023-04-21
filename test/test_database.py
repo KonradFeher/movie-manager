@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 
 import bcrypt
 
-from src.Database import Database
-from src.models.User import User
+from src.database import Database
+from src.models.user import User
 
 
 class TestDatabase(unittest.TestCase):
