@@ -1,4 +1,6 @@
 import pathlib
+import random
+
 import customtkinter
 from PIL import Image
 import tkinter
@@ -52,6 +54,12 @@ class MainPage(customtkinter.CTkFrame, Page):
 
         self.lbl_nav_logo = customtkinter.CTkLabel(master=self.frm_nav, text='', image=self.logo, width=125, height=125)
         self.lbl_nav_logo.pack()
+
+        self.lbl_greeting = customtkinter.CTkLabel(master=self.frm_nav, text='Greetings!')
+        self.lbl_greeting.pack()
+
+        self.btn_logout = customtkinter.CTkButton(master=self.frm_nav, text='Log Out', command=controller.log_user_out)
+        self.btn_logout.pack(pady=(5, 15))
 
         self.font = customtkinter.CTkFont(family="Prompt", size=18)
 
@@ -109,3 +117,9 @@ class MainPage(customtkinter.CTkFrame, Page):
         frame_class = eval(param)
         frame = self.frames[frame_class]
         frame.tkraise()
+
+    def set_greeting(self, username):
+        if username is None:
+            self.lbl_greeting.configure(text='Greetings!')
+        greetings = ['Hi,\n', 'Hello,\n', 'Welcome,\n', 'Greetings,\n']
+        self.lbl_greeting.configure(text=random.choice(greetings) + username)

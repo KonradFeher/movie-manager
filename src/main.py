@@ -59,7 +59,7 @@ class App(customtkinter.CTk):
             self.maxsize(width=int(maxsize[0]), height=int(maxsize[1]))
         self.geometry(page.get_page_size())
         if page == MainPage and first:
-            self.search_movies("The Big Lebowski")
+            self.load_movies(t="popular")
 
     # https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
     def center_window(self, width=1, height=1):
@@ -100,6 +100,8 @@ class App(customtkinter.CTk):
                 login_page.display_incorrect(show=False)
                 self.active_user = user
                 print("Successful login")
+                login_page.clear_form()
+                self.pages[MainPage].set_greeting(self.active_user.username)
                 self.show_page('MainPage', first=True)
                 return
             else:
@@ -140,8 +142,13 @@ class App(customtkinter.CTk):
                 print("Register unsuccessful.")
                 return
             db.create_user(username, email, password)
+            register_page.clear_form()
             print("Register successful.")
             self.show_page('LoginPage')
+
+    def log_user_out(self):
+        self.active_user = None
+        self.show_page('LoginPage')
 
     def handle_return(self):
         if self.current_page == "RegisterPage":

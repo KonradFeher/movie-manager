@@ -17,7 +17,7 @@ class SearchFrame(MainFrame):
             values=["Search", "Top Rated", "Popular", "Upcoming"],
             command=lambda e: self.categories_handler())
         self.seg_categories.pack(padx=20, pady=10)
-        self.seg_categories.set("Search")  # set initial value
+        self.seg_categories.set("Popular")  # set initial value
 
         self.lbl_page_title = customtkinter.CTkLabel(master=self, text="Search", font=('Roboto', 22, 'bold'))
         self.lbl_page_title.pack(pady=10)
