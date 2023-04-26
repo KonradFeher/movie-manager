@@ -1,9 +1,9 @@
 import pathlib
-from tkinter import BOTTOM
+from tkinter import BOTTOM, END
 
 import customtkinter
 from PIL import Image
-from src.pages.Page import Page
+from src.pages.page import Page
 
 
 class RegisterPage(customtkinter.CTkFrame, Page):
@@ -81,3 +81,9 @@ class RegisterPage(customtkinter.CTkFrame, Page):
         for error in errors:
             error_text += error + '\n'
         self.lbl_errors.configure(text=error_text)
+
+    def clear_form(self):
+        self.ent_username.delete(0, END)
+        self.ent_email.delete(0, END)
+        self.ent_password.delete(0, END)
+        self.ent_password_again.delete(0, END)

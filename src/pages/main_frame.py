@@ -1,25 +1,25 @@
 import asyncio
 import pathlib
+from tkinter import BOTTOM
+
 import customtkinter
 from PIL import Image
 
 
-class WatchlistFrame(customtkinter.CTkFrame):
+# most frames in the MainPage are this
+class MainFrame(customtkinter.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)
-
-        self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
-        self.controller = controller
+        print("main frame init")
         self.result_columns = 3
-
-        self.lbl_page_title = customtkinter.CTkLabel(master=self, text="My Watchlist", font=('Roboto', 22, 'bold'))
-        self.lbl_page_title.pack(pady=10)
+        self.controller = controller
+        self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
 
         self.frm_results = customtkinter.CTkScrollableFrame(master=self, height=555)
         self.frm_results.grid_rowconfigure("all", weight=1)
         for i in range(self.result_columns):
             self.frm_results.grid_columnconfigure(i, weight=1)
-        self.frm_results.pack(fill='both', expand=True, padx=10, pady=10)
+        self.frm_results.pack(side=BOTTOM, fill='both', expand=True, padx=10, pady=10)
         self.results = list()
 
     def reset_results_frame(self):
@@ -61,8 +61,7 @@ class WatchlistFrame(customtkinter.CTkFrame):
             lbl_movie_title = customtkinter.CTkLabel(master=frm_movie_card, text=label_text, wraplength=220)
             lbl_movie_title.pack(pady=10, padx=10)
 
-            frm_movie_card.grid(row=count // self.result_columns, column=count % self.result_columns, padx=10,
-                                pady=10)
+            frm_movie_card.grid(row=count // self.result_columns, column=count % self.result_columns, padx=10, pady=10)
 
             asyncio.run(self.set_handlers(movie, lbl_movie_poster, lbl_movie_title, frm_movie_card))
             count += 1

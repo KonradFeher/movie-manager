@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import IntegrityError
 import bcrypt
-from src.models.User import User
+from src.models.user import User
 
 
 class Database:

@@ -4,17 +4,17 @@ from PIL import Image
 import customtkinter
 import requests
 from src.API import APIaccess
-from src.Database import Database
-from src.pages.MainPage import MainPage
-from src.pages.LoginPage import LoginPage
-from src.pages.MovieFrame import MovieFrame
-from src.pages.RegisterPage import RegisterPage
+from src.database import Database
+from src.pages.main_page import MainPage
+from src.pages.login_page import LoginPage
+from src.pages.movie_frame import MovieFrame
+from src.pages.register_page import RegisterPage
 import difflib
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
-from src.pages.SearchFrame import SearchFrame
-from src.pages.WatchedFrame import WatchedFrame
-from src.pages.WatchlistFrame import WatchlistFrame
+from src.pages.search_frame import SearchFrame
+from src.pages.watched_frame import WatchedFrame
+from src.pages.watchlist_frame import WatchlistFrame
 
 
 class App(customtkinter.CTk):
@@ -64,7 +64,7 @@ class App(customtkinter.CTk):
 
         self.geometry(page.get_page_size())
         if page == MainPage and first:
-            self.search_movies("The Big Lebowski")
+            self.load_movies(t="popular")
 
     # https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
     def center_window(self, width=1, height=1):
@@ -105,6 +105,8 @@ class App(customtkinter.CTk):
                 login_page.display_incorrect(show=False)
                 self.active_user = user
                 print("Successful login")
+                login_page.clear_form()
+                self.pages[MainPage].set_greeting(self.active_user.username)
                 self.show_page('MainPage', first=True)
                 return
             else:
@@ -145,8 +147,13 @@ class App(customtkinter.CTk):
                 print("Register unsuccessful.")
                 return
             db.create_user(username, email, password)
+            register_page.clear_form()
             print("Register successful.")
             self.show_page('LoginPage')
+
+    def log_user_out(self):
+        self.active_user = None
+        self.show_page('LoginPage')
 
     def handle_return(self):
         if self.current_page == "RegisterPage":
