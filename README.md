@@ -17,7 +17,8 @@ Features (so far):
 All dependencies can be found in the `requirements.txt` file.  
 We can run `pip install -r requirements.txt` to install them.  
 
-We can run setup.py to run the program.
+We can run main.py to run the program, with this setup:
+![img.png](img.png)
 
 ## Regarding testing
 
