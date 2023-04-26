@@ -99,7 +99,8 @@ class SearchFrame(customtkinter.CTkFrame):
             lbl_no_results.grid(row=0, column=1, pady=10)
 
     async def set_handlers(self, movie, lbl_movie_poster, lbl_movie_title, frm_movie_card):
-        # 'bind_all' is not allowed, could result in undefined behavior ????????????
+        # 'bind_all' is not allowed, could result in undefined behavior ???
+        # well I'll just bind it all separately then...
 
         def button1(e, mov=movie):
             # print(mov.get('title'))

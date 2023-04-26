@@ -96,7 +96,6 @@ class MovieFrame(customtkinter.CTkFrame):
         print(movie)
         self.movie = movie
 
-        # todo: GRID IT UP
         self.lbl_title.configure(text=f'{movie.get("title")}\n'
                                       f'({movie.get("release_date").split("-")[0]})')
 

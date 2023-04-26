@@ -4,7 +4,7 @@ import requests
 from urllib.parse import quote_plus
 
 
-# ALWAYS USE QUOTE_PLUS, quote encodes ' ' as '%20', not as '+'
+# ALWAYS USE `quote_plus`, `quote` encodes ' ' as '%20', and not as '+'
 url_encode = functools.partial(quote_plus, safe='')
 
 
@@ -93,7 +93,7 @@ class APIaccess(object):
             if result.status_code == 200:
                 return result.json().get('results')
             else:
-                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+                raise Exception("Error while fetching recommendations, response status code:", result.status_code)
         except Exception as err:
             print(f'Error occurred: {err}')
             return None
@@ -108,7 +108,7 @@ class APIaccess(object):
             if result.status_code == 200:
                 return result.json().get('results')
             else:
-                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+                raise Exception("Error while fetching popular_movies, response status code:", result.status_code)
         except Exception as err:
             print(f'Error occurred: {err}')
             return None
@@ -123,7 +123,7 @@ class APIaccess(object):
             if result.status_code == 200:
                 return result.json().get('results')
             else:
-                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+                raise Exception("Error while fetching upcoming_movies, response status code:", result.status_code)
         except Exception as err:
             print(f'Error occurred: {err}')
             return None
@@ -140,7 +140,7 @@ class APIaccess(object):
                 if result.status_code == 200:
                     movies.extend(result.json().get('results'))
                 else:
-                    raise Exception("Error while fetching movie details, response status code:", result.status_code)
+                    raise Exception("Error while fetching top_rated_movies, response status code:", result.status_code)
             print(movies)
             return movies
         except Exception as err:
@@ -156,7 +156,7 @@ class APIaccess(object):
             if result.status_code == 200:
                 return [actor for actor in result.json().get('cast')]
             else:
-                raise Exception("Error while fetching movie details, response status code:", result.status_code)
+                raise Exception("Error while fetching actors, response status code:", result.status_code)
         except Exception as err:
             print(f'Error occurred: {err}')
             return None

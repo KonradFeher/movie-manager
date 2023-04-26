@@ -48,15 +48,20 @@ class App(customtkinter.CTk):
     def show_page(self, cont, first=False):
         self.focus_set()
         self.current_page = cont
+
         page = eval(cont)
         frame = self.pages[page]
+
         frame.tkraise()
+
         self.title(page.get_page_title())
         minsize = page.get_page_min_size().split('x')
         self.minsize(width=int(minsize[0]), height=int(minsize[1]))
+
         if page.get_page_max_size() is not None:
             maxsize = page.get_page_max_size().split('x')
             self.maxsize(width=int(maxsize[0]), height=int(maxsize[1]))
+
         self.geometry(page.get_page_size())
         if page == MainPage and first:
             self.search_movies("The Big Lebowski")
@@ -161,15 +166,18 @@ class App(customtkinter.CTk):
 
     def search_movies(self, title):
         print("Searching for", title)
+
         search_frame = self.pages[MainPage].frames[SearchFrame]
         search_frame.seg_categories.set("Search")
         search_frame.reset_results_frame()
+
         request_response = self.api.fetch_movies(title)
         results = sorted(
             request_response.get('results'),
             key=lambda x: difflib.SequenceMatcher(a=x['title'].lower(), b=title.lower()).ratio() ** 2 * x['popularity'],
             reverse=True
         )
+
         for result in results:
             try:
                 search_frame.add_result(result)
@@ -227,18 +235,18 @@ class App(customtkinter.CTk):
         search_frame = self.pages[MainPage].frames[SearchFrame]
         search_frame.reset_results_frame()
         results = None
-        t = t.lower()
-        print(t)
-        if t == "recommendations":
-            results = self.api.fetch_recommendations(movie.get('id'))
-        if t == "similar":
-            results = self.api.fetch_similar_movies(movie.get('id'))
-        if t == "top rated":
-            results = self.api.fetch_top_rated_movies(pages=3)
-        if t == "popular":
-            results = self.api.fetch_popular_movies()
-        if t == "upcoming":
-            results = self.api.fetch_upcoming_movies()
+
+        match t.lower():
+            case "recommendations":
+                results = self.api.fetch_recommendations(movie.get('id'))
+            case "similar":
+                results = self.api.fetch_similar_movies(movie.get('id'))
+            case "top rated":
+                results = self.api.fetch_top_rated_movies(pages=3)
+            case "popular":
+                results = self.api.fetch_popular_movies()
+            case "upcoming":
+                results = self.api.fetch_upcoming_movies()
 
         print('results:', results)
 
@@ -246,7 +254,7 @@ class App(customtkinter.CTk):
             try:
                 search_frame.add_result(result)
             except Exception as e:
-                print("HUH???", e)
+                print("Unexpected error: ", e)
         search_frame.refresh_results()
         self.show_page('MainPage')
         self.pages[MainPage].show_frame('SearchFrame')

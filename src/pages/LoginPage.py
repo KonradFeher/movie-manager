@@ -44,7 +44,6 @@ class LoginPage(customtkinter.CTkFrame, Page):
         self.frm_buttons = customtkinter.CTkFrame(master=self, fg_color="transparent")
         self.frm_buttons.grid_rowconfigure(0, weight=1)  # configure grid system
         self.frm_buttons.grid_columnconfigure(0, weight=1)
-        # self.frm_buttons.grid_columnconfigure(1, weight=1)
         self.frm_buttons.login_button = customtkinter.CTkButton(
             master=self.frm_buttons,
             width=200,
@@ -58,15 +57,6 @@ class LoginPage(customtkinter.CTkFrame, Page):
         self.lbl_incorrect = customtkinter.CTkLabel(master=self, text="", corner_radius=25, text_color="red")
         self.lbl_incorrect.pack(anchor="center")
 
-        # self.frm_buttons.register_button = customtkinter.CTkButton(
-        #     master=self.frm_buttons,
-        #     width=200,
-        #     height=40,
-        #     corner_radius=20,
-        #     text="Register",
-        #     command=lambda: controller.show_page(RegisterPage)
-        # )
-        # self.frm_buttons.register_button.grid(row=0, column=1, pady=5, padx=10)
         self.frm_buttons.pack(side=BOTTOM, anchor="center", pady=(25, 25), padx=20)
 
         self.btn_register = customtkinter.CTkButton(
