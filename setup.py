@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 setup(
     name='movie-manager',
     version='',
-    packages=find_packages(exclude=("test",)),
+    packages=find_packages(exclude=("tests",)),
     url='',
     license='',
     author='Konrad Feher',

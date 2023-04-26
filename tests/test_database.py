@@ -11,7 +11,7 @@ from src.models.user import User
 class TestDatabase(unittest.TestCase):
 
     def setUp(self):
-        self.db = Database("test.db")
+        self.db = Database("tests.db")
         self.db.create_tables()
         self.db.create_user("test_user", "test_user@example.com", "password")
 
@@ -20,7 +20,7 @@ class TestDatabase(unittest.TestCase):
         self.db.cur.execute("DROP TABLE watched")
         self.db.cur.execute("DROP TABLE watchlist")
         self.db.con.close()
-        os.remove('test.db')
+        os.remove('tests.db')
 
     def test_fetch_user_by_email(self):
         user = self.db.fetch_user_by_email("test_user@example.com")
@@ -95,14 +95,14 @@ class TestDatabase(unittest.TestCase):
     def test_user_exists_email(self):
         db = Database()
         db.cur = MagicMock()
-        db.cur.fetchall.return_value = [('testuser', 'testemail@test.com', bcrypt.hashpw(b'testpassword', bcrypt.gensalt()))]
-        exists = db.user_exists(email='testemail@test.com')
+        db.cur.fetchall.return_value = [('testuser', 'testemail@tests.com', bcrypt.hashpw(b'testpassword', bcrypt.gensalt()))]
+        exists = db.user_exists(email='testemail@tests.com')
         self.assertTrue(exists)
 
     def test_user_exists_username(self):
         db = Database()
         db.cur = MagicMock()
-        db.cur.fetchall.return_value = [('testuser', 'testemail@test.com', bcrypt.hashpw(b'testpassword', bcrypt.gensalt()))]
+        db.cur.fetchall.return_value = [('testuser', 'testemail@tests.com', bcrypt.hashpw(b'testpassword', bcrypt.gensalt()))]
         exists = db.user_exists(username='testuser')
         self.assertTrue(exists)
 
