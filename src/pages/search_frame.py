@@ -1,7 +1,4 @@
-import asyncio
-import pathlib
 import customtkinter
-from PIL import Image
 
 from src.pages.main_frame import MainFrame
 
