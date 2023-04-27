@@ -1,9 +1,11 @@
+import pathlib
 import sqlite3
 from sqlite3 import IntegrityError
 import bcrypt
 from src.models.user import User
 
 
+# Sqlite3 access
 class Database:
 
     def __enter__(self):
@@ -12,7 +14,8 @@ class Database:
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.con.close()
 
-    def __init__(self, file_path="movie-manager.db"):
+    # initialize database on file_path, create cursor
+    def __init__(self, file_path=pathlib.Path("src", "movie-manager.db")):
         self.file_path = file_path
         self.con = sqlite3.connect(self.file_path)
         self.cur = self.con.cursor()
@@ -108,24 +111,23 @@ class Database:
         self.cur.execute('INSERT INTO watchlist VALUES ("dummy_email@gmail.com", 29)')
         self.con.commit()
 
+    # return User or False if credentials are incorrect
     def verify_credentials(self, username_or_email, password):
         self.cur.execute(f'SELECT * FROM users WHERE username LIKE "{username_or_email}" OR email LIKE "{username_or_email}"')
         res = self.cur.fetchall()
         # print(res)
         if len(res) == 0:
-            # print("User not found")
             return False
         for result in res:
             user_data = result
-            # print(password.encode('utf-8'), user_data[2].encode('utf-8'),)
             if bcrypt.checkpw(password.encode('utf-8'), user_data[2].encode('utf-8')):
                 user = User(user_data[0], user_data[1],
                             self.fetch_watched_by_email(user_data[1]),
                             self.fetch_watchlist_by_email(user_data[1]))
-                # print(user)
                 return user
         return False
 
+    # check if user alraedy exists with email or username named param
     def user_exists(self, email='', username=''):
         if email == '' and username == '':
             return True

@@ -1,6 +1,5 @@
 import pathlib
 from tkinter import BOTTOM, END
-
 import customtkinter
 from PIL import Image
 from .page import Page
@@ -54,6 +53,7 @@ class LoginPage(customtkinter.CTkFrame, Page):
         )
         self.frm_buttons.login_button.grid(row=0, column=0, pady=5, padx=10)
 
+        # error label
         self.lbl_incorrect = customtkinter.CTkLabel(master=self, text="", corner_radius=25, text_color="red")
         self.lbl_incorrect.pack(anchor="center")
 

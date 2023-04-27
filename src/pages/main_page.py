@@ -1,6 +1,5 @@
 import pathlib
 import random
-
 import customtkinter
 from PIL import Image
 import tkinter
@@ -12,6 +11,7 @@ from .watched_frame import WatchedFrame
 from .watchlist_frame import WatchlistFrame
 
 
+# consists of a navbar and a container frame, holds instances of  frame modules
 class MainPage(customtkinter.CTkFrame, Page):
 
     @staticmethod
@@ -96,10 +96,10 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.lbl_nav_watched.bind("<Button-1>", lambda e: controller.go_to_watched())
         self.frm_nav_watched.bind("<Button-1>", lambda e: controller.go_to_watched())
 
+        # holds all frames that are on the right side of this page
         self.frames = dict()
 
         self.frame_container = customtkinter.CTkFrame(master=self)
-        # self.frame_container = customtkinter.CTkFrame(master=self) # OK
         self.frame_container.pack(side=tkinter.RIGHT, fill='both', expand=True)
         self.frame_container.grid_rowconfigure(0, weight=1)
         self.frame_container.grid_columnconfigure(0, weight=1)
@@ -111,6 +111,7 @@ class MainPage(customtkinter.CTkFrame, Page):
 
         self.show_frame("SearchFrame")
 
+    # brings frame to top
     def show_frame(self, param):
         self.focus_set()
         self.current_frame = param
@@ -118,6 +119,7 @@ class MainPage(customtkinter.CTkFrame, Page):
         frame = self.frames[frame_class]
         frame.tkraise()
 
+    # sets greeting on navbar
     def set_greeting(self, username):
         if username is None:
             self.lbl_greeting.configure(text='Greetings!')

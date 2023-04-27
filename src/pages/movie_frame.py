@@ -5,6 +5,7 @@ import customtkinter
 from PIL import Image
 
 
+# frame that displays details of movie
 class MovieFrame(customtkinter.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)
@@ -62,6 +63,8 @@ class MovieFrame(customtkinter.CTkFrame):
                                                  wraplength=300, justify="right")
         self.lbl_actors.pack(anchor="e", pady=5, padx=20)
 
+        # buttons
+
         self.btn_watchlist = customtkinter.CTkButton(
             master=self, text="Add to Watchlist",
             font=("Roboto", 20, "bold"),
@@ -91,6 +94,7 @@ class MovieFrame(customtkinter.CTkFrame):
             command=lambda: controller.load_movies(self.movie, t='recommendations'))
         self.btn_recommendations.pack(anchor="e", pady=5, padx=20)
 
+    # load details into CTK element values
     def load_movie(self, movie, actors):
         # movie = self.controller.api.fetch_movies("The Big Lebowski").get('results')[0]
         print(movie)

@@ -17,23 +17,32 @@ from pages.watched_frame import WatchedFrame
 from pages.watchlist_frame import WatchlistFrame
 
 
+# tkinter app
 class App(customtkinter.CTk):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
+
+        # set defaults
         self.current_page = None
         self.active_user = None
-        self.api = APIaccess('352322dd49f426559fac64881f6ecbb9')
-        customtkinter.set_appearance_mode("system")
-        customtkinter.set_default_color_theme("dark-blue")  # #2fa572
         self.minsize(width=520, height=600)
         self.title("MovieManager")
         self.geometry("600x580+300+100")
 
+        # set appearance
+        customtkinter.set_appearance_mode("system")
+        customtkinter.set_default_color_theme("dark-blue")  # #2fa572
+
+        # api access
+        self.api = APIaccess('352322dd49f426559fac64881f6ecbb9')
+
+        # container for app frames - covers entire window
         self.container = customtkinter.CTkFrame(self, height=480, width=720)
         self.container.pack(side="top", fill="both", expand=True)
         self.container.grid_rowconfigure(0, weight=1)
         self.container.grid_columnconfigure(0, weight=1)
 
+        # initialize pages
         self.pages = dict()
         for F in (LoginPage, RegisterPage, MainPage):
             frame = F(self.container, self)
@@ -45,6 +54,7 @@ class App(customtkinter.CTk):
         self.show_page("LoginPage")
         self.current_page = "LoginPage"
 
+    # display page given by string name
     def show_page(self, cont, first=False):
         self.focus_set()
         self.current_page = cont
@@ -62,10 +72,12 @@ class App(customtkinter.CTk):
             maxsize = page.get_page_max_size().split('x')
             self.maxsize(width=int(maxsize[0]), height=int(maxsize[1]))
 
+        # on first load open popular
         self.geometry(page.get_page_size())
         if page == MainPage and first:
             self.load_movies(t="popular")
 
+    # center window to middle of screen
     # https://stackoverflow.com/questions/14910858/how-to-specify-where-a-tkinter-window-opens
     def center_window(self, width=1, height=1):
         w = self._current_width
@@ -83,6 +95,7 @@ class App(customtkinter.CTk):
         # and where it is placed
         self.geometry('%dx%d+%d+%d' % (w, h, x, y))
 
+    # login page login function
     def login_user(self):
         login_page = self.pages[LoginPage]
 
@@ -106,6 +119,7 @@ class App(customtkinter.CTk):
                 self.active_user = user
                 print("Successful login")
                 login_page.clear_form()
+                # send to main page
                 self.pages[MainPage].set_greeting(self.active_user.username)
                 self.show_page('MainPage', first=True)
                 return
@@ -114,6 +128,7 @@ class App(customtkinter.CTk):
                 login_page.display_incorrect()
                 return
 
+    # register page register function
     def register_user(self):
         register_page = self.pages[RegisterPage]
 
@@ -125,6 +140,7 @@ class App(customtkinter.CTk):
         print(username)
         print(email)
 
+        # validating fields
         errors = []
         if not re.fullmatch(r'[a-zA-Z\d]{4,20}', username):
             errors.append("Username is invalid. \n 4-20 characters, a-z A-Z 0-9 are allowed.")
@@ -142,19 +158,22 @@ class App(customtkinter.CTk):
                 errors.append("User already exists with that username.")
             if db.user_exists(email=email):
                 errors.append("User already exists with that email address.")
-            register_page.display_errors(errors)
             if len(errors) > 0:
+                register_page.display_errors(errors)
                 print("Register unsuccessful.")
                 return
+            # create user, clear form and move to login page
             db.create_user(username, email, password)
             register_page.clear_form()
             print("Register successful.")
             self.show_page('LoginPage')
 
+    # clear current user and return to login page
     def log_user_out(self):
         self.active_user = None
         self.show_page('LoginPage')
 
+    # pressing the enter key is bound to this function
     def handle_return(self):
         if self.current_page == "RegisterPage":
             self.register_user()
@@ -163,6 +182,7 @@ class App(customtkinter.CTk):
         elif self.current_page == "MainPage":
             self.search_movies(self.pages[MainPage].frames[SearchFrame].ent_movie_title.get())
 
+    # fetch image from API on path with type and size
     def get_movie_image(self, path, typ='poster', size=1):
         if path is not None and path != 0 and path != "":
             img_conf = self.api.configs.get('images')
@@ -171,6 +191,7 @@ class App(customtkinter.CTk):
         else:
             return None
 
+    # search for title and add movies to frame
     def search_movies(self, title):
         print("Searching for", title)
 
@@ -192,12 +213,15 @@ class App(customtkinter.CTk):
                 print("HUH?", e)
         search_frame.refresh_results()
 
+    # bound to clicking on movies
+    # redirects to movie's details
     def show_movie(self, movie):
         movie_details = self.api.fetch_movie_details(movie.get('id'))
         movie_actors = self.api.fetch_actors(movie.get('id'))
         self.pages[MainPage].frames[MovieFrame].load_movie(movie_details, movie_actors)
         self.pages[MainPage].show_frame('MovieFrame')
 
+    # add movie to current user's watchlist
     def add_to_watchlist(self, movie):
         self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="disabled")
         self.pages[MainPage].frames[MovieFrame].btn_watched_it.configure(state="normal")
@@ -205,6 +229,7 @@ class App(customtkinter.CTk):
             db.add_to_watchlist(self.active_user.email, movie.get('id'))
             self.active_user.watchlist_ids.append(movie.get('id'))
 
+    # add movie to current user's watched movies
     def add_to_watched(self, movie):
         self.pages[MainPage].frames[MovieFrame].btn_watched_it.configure(state="disabled")
         self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="normal")
@@ -212,6 +237,7 @@ class App(customtkinter.CTk):
             db.add_to_watched(self.active_user.email, movie.get('id'))
             self.active_user.watched_ids.append(movie.get('id'))
 
+    # go to current user's watched movies
     def go_to_watched(self):
         self.pages[MainPage].frames[WatchedFrame].reset_results_frame()
         with Database("movie-manager.db") as db:
@@ -224,6 +250,7 @@ class App(customtkinter.CTk):
         self.pages[MainPage].frames[WatchedFrame].refresh_results()
         self.pages[MainPage].show_frame("WatchedFrame")
 
+    # go to current user's watchlist
     def go_to_watchlist(self):
         self.pages[MainPage].frames[WatchlistFrame].reset_results_frame()
         with Database("movie-manager.db") as db:
@@ -236,6 +263,7 @@ class App(customtkinter.CTk):
         self.pages[MainPage].frames[WatchlistFrame].refresh_results()
         self.pages[MainPage].show_frame("WatchlistFrame")
 
+    # various kinds of ways to get movies
     def load_movies(self, movie=None, t="recommendations"):
         if movie is None:
             movie = {'id': 115}
@@ -267,10 +295,12 @@ class App(customtkinter.CTk):
         self.pages[MainPage].show_frame('SearchFrame')
 
 
+# app entry point
 if __name__ in {"__main__", "__mp_main__"}:
     app = App()
 
-    # https://stackoverflow.com/a/9109106 - starting minimized fix
+    # app starting minimized fix
+    # https://stackoverflow.com/a/9109106
     app.attributes('-topmost', 1)
     app.update()
     app.attributes('-topmost', 0)

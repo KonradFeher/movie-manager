@@ -1,3 +1,4 @@
+# Model for user
 class User(object):
     def __init__(self, username, email, watched_ids=None, watchlist_ids=None):
         if watchlist_ids is None:

@@ -1,12 +1,11 @@
 import asyncio
 import pathlib
 from tkinter import BOTTOM
-
 import customtkinter
 from PIL import Image
 
 
-# most frames in the MainPage are this
+# class can be extended for all kinds of mass movie displaying, search results
 class MainFrame(customtkinter.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)
@@ -22,6 +21,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.frm_results.pack(side=BOTTOM, fill='both', expand=True, padx=10, pady=10)
         self.results = list()
 
+    # clear results frame
     def reset_results_frame(self):
         self.clear_results()
         self.frm_results.pack_forget()
@@ -33,12 +33,15 @@ class MainFrame(customtkinter.CTkFrame):
         self.frm_results.pack(fill='both', expand=True, padx=10, pady=10)
         self.results = list()
 
+    # add a movie to results
     def add_result(self, movie):
         self.results.append(movie)
 
+    # clear results list
     def clear_results(self):
         self.results = list()
 
+    # reload results frame
     def refresh_results(self):
         for widget in self.frm_results.winfo_children():
             widget.destroy()
@@ -71,6 +74,7 @@ class MainFrame(customtkinter.CTkFrame):
             lbl_no_results = customtkinter.CTkLabel(master=self.frm_results, text='No results.')
             lbl_no_results.grid(row=0, column=1, pady=10)
 
+    # bind show_movie to clicking any part of the movie card
     async def set_handlers(self, movie, lbl_movie_poster, lbl_movie_title, frm_movie_card):
 
         def button1(e, mov=movie):
@@ -97,6 +101,7 @@ class MainFrame(customtkinter.CTkFrame):
         lbl_movie_title.bind("<Leave>", leave)
         frm_movie_card.bind("<Leave>", leave)
 
+    # async get image from app root
     async def load_image(self, movie, label):
         poster = self.controller.get_movie_image(movie.get('poster_path'), size=2)
         img_poster = customtkinter.CTkImage(

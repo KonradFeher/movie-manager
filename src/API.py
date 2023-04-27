@@ -1,5 +1,4 @@
 import functools
-
 import requests
 from urllib.parse import quote_plus
 
@@ -8,6 +7,7 @@ from urllib.parse import quote_plus
 url_encode = functools.partial(quote_plus, safe='')
 
 
+# TheMovieDB API access object, initialized with API key
 class APIaccess(object):
 
     def __init__(self, api_key):

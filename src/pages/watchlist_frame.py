@@ -5,6 +5,7 @@ from PIL import Image
 from .main_frame import MainFrame
 
 
+# used to display current user's watchlist-ed movies
 class WatchlistFrame(MainFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, controller, **kwargs)

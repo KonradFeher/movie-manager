@@ -3,12 +3,14 @@ import customtkinter
 from .main_frame import MainFrame
 
 
+# search frame, search for movies and display them
 class SearchFrame(MainFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, controller, **kwargs)
 
         self.controller = controller
 
+        # can see top_rated / popular / upcoming movies
         self.seg_categories = customtkinter.CTkSegmentedButton(
             master=self,
             values=["Search", "Top Rated", "Popular", "Upcoming"],
@@ -35,6 +37,7 @@ class SearchFrame(MainFrame):
         )
         self.btn_search.pack(pady=(20, 20))
 
+    # starts search when clicked
     def categories_handler(self):
         cat = self.seg_categories.get()
         if cat != "Search":

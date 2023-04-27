@@ -32,6 +32,8 @@ class RegisterPage(customtkinter.CTkFrame, Page):
         self.lbl_logo = customtkinter.CTkLabel(master=self, image=self.logo, text="", corner_radius=25)
         self.lbl_logo.pack(anchor="center", pady=(50, 10), padx=30)
 
+        # register form
+
         self.lbl_username = customtkinter.CTkLabel(master=self, text="Username")
         self.lbl_username.pack(anchor="center", pady=(25, 0), padx=30)
         self.ent_username = customtkinter.CTkEntry(master=self, width=400, corner_radius=5, placeholder_text="The_Dude")
@@ -76,6 +78,7 @@ class RegisterPage(customtkinter.CTkFrame, Page):
         )
         self.btn_back.place(anchor="nw", x=20, y=20)
 
+    # show form errors
     def display_errors(self, errors):
         error_text = ""
         for error in errors:
