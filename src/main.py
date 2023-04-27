@@ -3,18 +3,18 @@ from io import BytesIO
 from PIL import Image
 import customtkinter
 import requests
-from src.API import APIaccess
-from src.database import Database
-from src.pages.main_page import MainPage
-from src.pages.login_page import LoginPage
-from src.pages.movie_frame import MovieFrame
-from src.pages.register_page import RegisterPage
+from API import APIaccess
+from database import Database
+from pages.main_page import MainPage
+from pages.login_page import LoginPage
+from pages.movie_frame import MovieFrame
+from pages.register_page import RegisterPage
 import difflib
 
 # https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
-from src.pages.search_frame import SearchFrame
-from src.pages.watched_frame import WatchedFrame
-from src.pages.watchlist_frame import WatchlistFrame
+from pages.search_frame import SearchFrame
+from pages.watched_frame import WatchedFrame
+from pages.watchlist_frame import WatchlistFrame
 
 
 class App(customtkinter.CTk):
@@ -243,17 +243,17 @@ class App(customtkinter.CTk):
         search_frame.reset_results_frame()
         results = None
 
-        match t.lower():
-            case "recommendations":
-                results = self.api.fetch_recommendations(movie.get('id'))
-            case "similar":
-                results = self.api.fetch_similar_movies(movie.get('id'))
-            case "top rated":
-                results = self.api.fetch_top_rated_movies(pages=3)
-            case "popular":
-                results = self.api.fetch_popular_movies()
-            case "upcoming":
-                results = self.api.fetch_upcoming_movies()
+        t = t.lower()
+        if t == "recommendations":
+            results = self.api.fetch_recommendations(movie.get('id'))
+        if t == "similar":
+            results = self.api.fetch_similar_movies(movie.get('id'))
+        if t == "top rated":
+            results = self.api.fetch_top_rated_movies(pages=3)
+        if t == "popular":
+            results = self.api.fetch_popular_movies()
+        if t == "upcoming":
+            results = self.api.fetch_upcoming_movies()
 
         print('results:', results)
 

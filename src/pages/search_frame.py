@@ -1,6 +1,6 @@
 import customtkinter
 
-from src.pages.main_frame import MainFrame
+from .main_frame import MainFrame
 
 
 class SearchFrame(MainFrame):

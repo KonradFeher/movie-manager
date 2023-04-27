@@ -3,7 +3,7 @@ from tkinter import BOTTOM, END
 
 import customtkinter
 from PIL import Image
-from src.pages.page import Page
+from .page import Page
 
 
 class LoginPage(customtkinter.CTkFrame, Page):
