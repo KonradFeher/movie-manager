@@ -1,5 +1,6 @@
 import math
 import pathlib
+from tkinter import BOTTOM, LEFT
 
 import customtkinter
 from PIL import Image
@@ -23,76 +24,80 @@ class MovieFrame(customtkinter.CTkFrame):
         self.lbl_title = customtkinter.CTkLabel(master=self, text="Movie Title", font=("Roboto", 30, "bold"))
         self.lbl_title.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_original_title = customtkinter.CTkLabel(master=self, text="original_title", font=("Roboto", 12),
+        self.lbl_original_title = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12),
                                                          wraplength=300, justify="right")
         self.lbl_original_title.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_tagline = customtkinter.CTkLabel(master=self, text="tagline", font=("Roboto", 12), wraplength=300,
+        self.lbl_tagline = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12), wraplength=300,
                                                   justify="right")
         self.lbl_tagline.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_runtime = customtkinter.CTkLabel(master=self, text="runtime", font=("Roboto", 12), wraplength=300,
+        self.lbl_runtime = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12), wraplength=300,
                                                   justify="right")
         self.lbl_runtime.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_overview = customtkinter.CTkLabel(master=self, text="Overview", font=("Roboto", 12), wraplength=300,
+        self.lbl_overview = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12), wraplength=300,
                                                    justify="right")
         self.lbl_overview.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_budget = customtkinter.CTkLabel(master=self, text="budget", font=("Roboto", 12), wraplength=300,
+        self.lbl_budget = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12), wraplength=300,
                                                  justify="right")
         self.lbl_budget.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_revenue = customtkinter.CTkLabel(master=self, text="revenue", font=("Roboto", 12), wraplength=300,
+        self.lbl_revenue = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12), wraplength=300,
                                                   justify="right")
         self.lbl_revenue.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_vote_average = customtkinter.CTkLabel(master=self, text="vote_average", font=("Roboto", 12),
+        self.lbl_vote_average = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12),
                                                        wraplength=300, justify="right")
         self.lbl_vote_average.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_vote_count = customtkinter.CTkLabel(master=self, text="vote_count", font=("Roboto", 12),
+        self.lbl_vote_count = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12),
                                                      wraplength=300, justify="right")
         self.lbl_vote_count.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_genres = customtkinter.CTkLabel(master=self, text="genres", font=("Roboto", 12),
+        self.lbl_genres = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12),
                                                  wraplength=300, justify="right")
         self.lbl_genres.pack(anchor="e", pady=5, padx=20)
 
-        self.lbl_actors = customtkinter.CTkLabel(master=self, text="actors", font=("Roboto", 12),
+        self.lbl_actors = customtkinter.CTkLabel(master=self, text=" - ", font=("Roboto", 12),
                                                  wraplength=300, justify="right")
         self.lbl_actors.pack(anchor="e", pady=5, padx=20)
 
         # buttons
 
+        self.frm_buttons = customtkinter.CTkFrame(master=self, fg_color=self.cget('fg_color'),
+                                                  bg_color=self.cget('bg_color'))
+        self.frm_buttons.pack(side=BOTTOM, fill='both', expand=False)
+
         self.btn_watchlist = customtkinter.CTkButton(
-            master=self, text="Add to Watchlist",
+            master=self.frm_buttons, text="Add to Watchlist",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
             command=lambda: controller.add_to_watchlist(self.movie)
         )
-        self.btn_watchlist.pack(anchor="e", pady=5, padx=20)
+        self.btn_watchlist.pack(side=LEFT, pady=5, padx=8)
 
         self.btn_watched_it = customtkinter.CTkButton(
-            master=self, text="Watched it!",
+            master=self.frm_buttons, text="Watched it!",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
             command=lambda: controller.add_to_watched(self.movie))
-        self.btn_watched_it.pack(anchor="e", pady=5, padx=20)
+        self.btn_watched_it.pack(side=LEFT, pady=5, padx=8)
 
         self.btn_similar = customtkinter.CTkButton(
-            master=self, text="Similar Movies",
+            master=self.frm_buttons, text="Similar Movies",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
             command=lambda: controller.load_movies(self.movie, t='similar'))
-        self.btn_similar.pack(anchor="e", pady=5, padx=20)
+        self.btn_similar.pack(side=LEFT, pady=5, padx=8)
 
         self.btn_recommendations = customtkinter.CTkButton(
-            master=self, text="Recommendations",
+            master=self.frm_buttons, text="Recommendations",
             font=("Roboto", 20, "bold"),
             bg_color="transparent",
             command=lambda: controller.load_movies(self.movie, t='recommendations'))
-        self.btn_recommendations.pack(anchor="e", pady=5, padx=20)
+        self.btn_recommendations.pack(side=LEFT, pady=5, padx=8)
 
     # load details into CTK element values
     def load_movie(self, movie, actors):
@@ -124,7 +129,8 @@ class MovieFrame(customtkinter.CTkFrame):
         self.lbl_overview.configure(text=f'{movie.get("overview")}')
         self.lbl_original_title.configure(
             text=f'{movie.get("original_title")} ({movie.get("original_language").upper()})')
-        self.lbl_tagline.configure(text=f'"{movie.get("tagline")}"', font=("Roboto", 15, "italic"))
+        self.lbl_tagline.configure(text=f'"{movie.get("tagline")}"' if movie.get('tagline') != '' else "",
+                                   font=("Roboto", 15, "italic"))
         self.lbl_runtime.configure(text=f'Runtime\n'
                                         f'{movie.get("runtime")} minutes')
         self.lbl_overview.configure(text=f'{movie.get("overview")}')
@@ -138,7 +144,7 @@ class MovieFrame(customtkinter.CTkFrame):
                                            f'{movie.get("vote_count")}')
         self.lbl_genres.configure(text=f'Genres\n{", ".join([x["name"] for x in movie.get("genres")])}')
 
-        top_actors = ", ".join([actor.get("original_name") for actor in actors if actor.get("order") < 3])
+        top_actors = "\n".join([actor.get("original_name") for actor in actors if actor.get("order") < 3])
         self.lbl_genres.configure(text=f'Top Actors\n{top_actors}')
 
         if movie.get('id') in self.controller.active_user.watchlist_ids:

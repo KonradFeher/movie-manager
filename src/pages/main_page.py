@@ -96,6 +96,14 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.lbl_nav_watched.bind("<Button-1>", lambda e: controller.go_to_watched())
         self.frm_nav_watched.bind("<Button-1>", lambda e: controller.go_to_watched())
 
+        # my most watched actors
+        self.lbl_nav_actors_title = customtkinter.CTkLabel(master=self.frm_nav, text='Most Watched\n Actors',
+                                                           font=('Roboto', 16, 'bold'))
+        self.lbl_nav_actors = customtkinter.CTkLabel(master=self.frm_nav, text='actor 1 \n actor 2 \n actor 3',
+                                                     font=('Roboto', 13))
+        self.lbl_nav_actors.pack(side=tkinter.BOTTOM)
+        self.lbl_nav_actors_title.pack(side=tkinter.BOTTOM)
+
         # holds all frames that are on the right side of this page
         self.frames = dict()
 
@@ -110,6 +118,14 @@ class MainPage(customtkinter.CTkFrame, Page):
             frame.grid(row=0, column=0, sticky="NSEW")
 
         self.show_frame("SearchFrame")
+
+    # refreshes my_actors to given frequency dict
+    def show_my_actors(self, actors, n):
+        print('refreshing top actors')
+        sorted_actors = dict(sorted(actors.items(), key=lambda x: x[1], reverse=True))
+        top_n = list(sorted_actors.items())[:n]
+        top_n_str = '\n'.join([f"{item} - {freq}" for item, freq in top_n])
+        self.lbl_nav_actors.configure(text=top_n_str)
 
     # brings frame to top
     def show_frame(self, param):

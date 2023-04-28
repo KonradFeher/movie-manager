@@ -3,20 +3,20 @@ from io import BytesIO
 from PIL import Image
 import customtkinter
 import requests
+import difflib
+
 from API import APIaccess
 from database import Database
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.movie_frame import MovieFrame
 from pages.register_page import RegisterPage
-import difflib
-
-# https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
 from pages.search_frame import SearchFrame
 from pages.watched_frame import WatchedFrame
 from pages.watchlist_frame import WatchlistFrame
 
 
+# https://www.digitalocean.com/community/tutorials/tkinter-working-with-classes
 # tkinter app
 class App(customtkinter.CTk):
     def __init__(self, **kwargs):
@@ -121,6 +121,7 @@ class App(customtkinter.CTk):
                 login_page.clear_form()
                 # send to main page
                 self.pages[MainPage].set_greeting(self.active_user.username)
+                self.fetch_my_actors()
                 self.show_page('MainPage', first=True)
                 return
             else:
@@ -221,6 +222,15 @@ class App(customtkinter.CTk):
         self.pages[MainPage].frames[MovieFrame].load_movie(movie_details, movie_actors)
         self.pages[MainPage].show_frame('MovieFrame')
 
+    # get most watched actor
+    def fetch_my_actors(self):
+        actor_freq = dict()
+        for movie_id in self.active_user.watched_ids:
+            for actor in self.api.fetch_actors(movie_id):
+                actor_freq[actor.get("original_name")] = actor_freq.get(actor.get("original_name"), 0) + 1
+        self.pages[MainPage].show_my_actors(actor_freq, 10)
+        self.pages[MainPage].show_frame('MovieFrame')
+
     # add movie to current user's watchlist
     def add_to_watchlist(self, movie):
         self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="disabled")
@@ -236,6 +246,7 @@ class App(customtkinter.CTk):
         with Database("movie-manager.db") as db:
             db.add_to_watched(self.active_user.email, movie.get('id'))
             self.active_user.watched_ids.append(movie.get('id'))
+        self.fetch_my_actors()
 
     # go to current user's watched movies
     def go_to_watched(self):
