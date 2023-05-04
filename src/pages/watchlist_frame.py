@@ -1,3 +1,4 @@
+import os
 import pathlib
 import customtkinter
 from PIL import Image
@@ -10,7 +11,7 @@ class WatchlistFrame(MainFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, controller, **kwargs)
 
-        self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
+        self.default_poster = Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon.png"))
         self.controller = controller
         self.result_columns = 3
 

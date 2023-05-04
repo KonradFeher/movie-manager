@@ -112,7 +112,7 @@ class App(customtkinter.CTk):
             login_page.display_incorrect()
             return False
 
-        with Database("movie-manager.db") as db:
+        with Database() as db:
             user = db.verify_credentials(username_or_email, password)
             if user:
                 login_page.display_incorrect(show=False)
@@ -154,7 +154,7 @@ class App(customtkinter.CTk):
         if password != password_2:
             errors.append("Passwords don't match.")
 
-        with Database("movie-manager.db") as db:
+        with Database() as db:
             if db.user_exists(username=username):
                 errors.append("User already exists with that username.")
             if db.user_exists(email=email):
@@ -235,7 +235,7 @@ class App(customtkinter.CTk):
     def add_to_watchlist(self, movie):
         self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="disabled")
         self.pages[MainPage].frames[MovieFrame].btn_watched_it.configure(state="normal")
-        with Database("movie-manager.db") as db:
+        with Database() as db:
             db.add_to_watchlist(self.active_user.email, movie.get('id'))
             self.active_user.watchlist_ids.append(movie.get('id'))
 
@@ -243,7 +243,7 @@ class App(customtkinter.CTk):
     def add_to_watched(self, movie):
         self.pages[MainPage].frames[MovieFrame].btn_watched_it.configure(state="disabled")
         self.pages[MainPage].frames[MovieFrame].btn_watchlist.configure(state="normal")
-        with Database("movie-manager.db") as db:
+        with Database() as db:
             db.add_to_watched(self.active_user.email, movie.get('id'))
             self.active_user.watched_ids.append(movie.get('id'))
         self.fetch_my_actors()
@@ -251,7 +251,7 @@ class App(customtkinter.CTk):
     # go to current user's watched movies
     def go_to_watched(self):
         self.pages[MainPage].frames[WatchedFrame].reset_results_frame()
-        with Database("movie-manager.db") as db:
+        with Database() as db:
             watched_ids = db.fetch_watched_by_email(self.active_user.email)
             # print(watched_ids)
             watched_ids.reverse()
@@ -264,7 +264,7 @@ class App(customtkinter.CTk):
     # go to current user's watchlist
     def go_to_watchlist(self):
         self.pages[MainPage].frames[WatchlistFrame].reset_results_frame()
-        with Database("movie-manager.db") as db:
+        with Database() as db:
             watchlist_ids = db.fetch_watchlist_by_email(self.active_user.email)
             print(watchlist_ids)
             watchlist_ids.reverse()
@@ -306,8 +306,7 @@ class App(customtkinter.CTk):
         self.pages[MainPage].show_frame('SearchFrame')
 
 
-# app entry point
-if __name__ in {"__main__", "__mp_main__"}:
+def main():
     app = App()
 
     # app starting minimized fix
@@ -317,3 +316,8 @@ if __name__ in {"__main__", "__mp_main__"}:
     app.attributes('-topmost', 0)
 
     app.mainloop()
+
+
+# app entry point
+if __name__ in {"__main__", "__mp_main__"}:
+    main()

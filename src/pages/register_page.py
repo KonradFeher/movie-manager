@@ -1,3 +1,4 @@
+import os
 import pathlib
 from tkinter import BOTTOM, END
 
@@ -24,8 +25,8 @@ class RegisterPage(customtkinter.CTkFrame, Page):
         super().__init__(master, **kwargs)
 
         self.logo = customtkinter.CTkImage(
-            light_image=Image.open(pathlib.Path("assets", "icon_1.png")),
-            dark_image=Image.open(pathlib.Path("assets", "icon_2.png")),
+            light_image=Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon_1.png")),
+            dark_image=Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon_2.png")),
             size=(200, 200)
         )
 

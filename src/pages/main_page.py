@@ -1,3 +1,4 @@
+import os
 import pathlib
 import random
 import customtkinter
@@ -32,7 +33,7 @@ class MainPage(customtkinter.CTkFrame, Page):
 
     def __init__(self, master: customtkinter.CTkFrame, controller, **kwargs):
         super().__init__(master, **kwargs)
-        # self.default_poster = Image.open(pathlib.Path("assets", "default_poster.jpg"))
+        # self.default_poster = Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "default_poster.jpg"))
         self.current_frame = "SearchFrame"
         self.controller = controller
 
@@ -41,8 +42,8 @@ class MainPage(customtkinter.CTkFrame, Page):
         self.frm_nav.pack(side=tkinter.LEFT, fill='both', expand=False)
 
         self.logo = customtkinter.CTkImage(
-            light_image=Image.open(pathlib.Path("assets", "icon_1.png")),
-            dark_image=Image.open(pathlib.Path("assets", "icon_2.png")),
+            light_image=Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon_1.png")),
+            dark_image=Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon_2.png")),
             size=(125, 125)
         )
 

@@ -1,4 +1,5 @@
 import asyncio
+import os
 import pathlib
 from tkinter import BOTTOM
 import customtkinter
@@ -12,7 +13,7 @@ class MainFrame(customtkinter.CTkFrame):
         print("main frame init")
         self.result_columns = 3
         self.controller = controller
-        self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
+        self.default_poster = Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon.png"))
 
         self.frm_results = customtkinter.CTkScrollableFrame(master=self, height=555)
         self.frm_results.grid_rowconfigure("all", weight=1)

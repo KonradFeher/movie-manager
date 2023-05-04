@@ -3,6 +3,9 @@ import customtkinter
 from PIL import Image
 
 from .main_frame import MainFrame
+import os
+
+dir_path = os.path.dirname(os.path.realpath(__file__))
 
 
 # used to display current user's watched movies
@@ -10,7 +13,7 @@ class WatchedFrame(MainFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, controller, **kwargs)
 
-        self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
+        self.default_poster = Image.open(pathlib.Path(dir_path, "..", "assets", "icon.png"))
         self.controller = controller
         self.result_columns = 3
 

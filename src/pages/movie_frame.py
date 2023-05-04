@@ -1,4 +1,5 @@
 import math
+import os
 import pathlib
 from tkinter import BOTTOM, LEFT
 
@@ -11,7 +12,7 @@ class MovieFrame(customtkinter.CTkFrame):
     def __init__(self, master, controller, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.default_poster = Image.open(pathlib.Path("assets", "icon.png"))
+        self.default_poster = Image.open(pathlib.Path(os.path.dirname(os.path.realpath(__file__)), "..", "assets", "icon.png"))
         self.controller = controller
         self.result_columns = 3
         self.movie = None
