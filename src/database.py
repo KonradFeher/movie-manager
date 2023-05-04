@@ -2,7 +2,7 @@ import pathlib
 import sqlite3
 from sqlite3 import IntegrityError
 import bcrypt
-from src.models.user import User
+from models.user import User
 
 
 # Sqlite3 access
