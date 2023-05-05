@@ -5,8 +5,14 @@ import customtkinter
 import requests
 import difflib
 
+# when running setup.py:
+# from .API import APIaccess
+# from .database import Database
+
+# when running in pycharm:
 from API import APIaccess
 from database import Database
+
 from pages.main_page import MainPage
 from pages.login_page import LoginPage
 from pages.movie_frame import MovieFrame
